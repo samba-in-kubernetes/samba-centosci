@@ -1,0 +1,55 @@
+- job:
+    name: samba_gluster-integration
+    node: cico-workspace
+    description: Run integrations for clustered samba on top of GlusterFS. They are run on latest bits from Samba and Gluster.
+    project-type: freestyle
+    concurrent: true
+
+    parameters:
+    - string:
+        default: '8'
+        description: CentOS version to be installed on host node
+        name: CENTOS_VERSION
+
+    scm:
+    - git:
+        url: https://github.com/anoopcs9/samba-centosci
+
+    properties:
+    - github:
+        url: https://github.com/gluster/samba-integration
+    - build-discarder:
+        days-to-keep: 7
+        artifacts-days-to-keep: 7
+
+    triggers:
+    - timed: "H 2 * * *"
+    - github-pull-request:
+        admin-list:
+        - obnoxxx
+        - gd
+        - anoopcs9
+        - spuiuk
+        cron: H/5 * * * *
+        status-context: centos-ci/glusterfs/master
+        white-list-target-branches:
+        - master
+        - tests
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-integration/gluster-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION"
+
+    publishers:
+    - email-ext:
+        recipients: anoopcs@samba.org, gd@samba.org, sprabhu@redhat.com
+        reply-to: $DEFAULT_REPLYTO
+        subject: $DEFAULT_SUBJECT
+        content-type: text
+        body: $DEFAULT_CONTENT
+        attach-build-log: true
+    - post-tasks:
+        - matches:
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
