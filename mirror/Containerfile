@@ -1,0 +1,14 @@
+FROM quay.io/centos/centos:stream
+
+RUN true \
+ && dnf -y install skopeo \
+ && dnf -y clean all \
+ && true
+
+ADD mirror-images.txt /opt/mirror/
+ADD mirror-images.sh /opt/mirror/
+
+ENV HOME=/opt/mirror
+WORKDIR /opt/mirror
+
+CMD ["./mirror-images.sh"]
