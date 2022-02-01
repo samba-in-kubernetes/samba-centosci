@@ -7,7 +7,7 @@
 GIT_REPO_NAME="samba-integration"
 GIT_REPO_URL="https://github.com/gluster/${GIT_REPO_NAME}.git"
 TESTS_GIT_BRANCH="tests"
-CENTOS_VERSION="${CENTOS_VERSION:-7}"
+CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
 TEST_EXTRA_VARS=""
 TEST_TARGET="test"
 SCRIPT_GIT_BRANCH="centos-ci"
