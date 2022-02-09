@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ImageStream
+metadata:
+  name: prune-images
+  labels:
+    app: prune-images
+spec:
+  tags:
+    - name: latest
+
+---
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  name: prune-images
+  labels:
+    app: prune-images
+spec:
+  runPolicy: Serial
+  source:
+    git:
+      uri: https://github.com/anoopcs9/samba-centosci
+      ref: main
+    contextDir: prune
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Containerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: prune-images:latest

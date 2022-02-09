@@ -1,0 +1,22 @@
+# Run with a privileged ServiceAccount who can 'get', 'list', 'watch', 'update'
+# and 'patch' deployments and pods
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: prune-images
+  labels:
+    app: prune-images
+spec:
+  schedule: '@daily'
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: prune-images
+        spec:
+          containers:
+            - name: prune-images
+              image: image-registry.openshift-image-registry.svc:5000/samba/prune-images:latest
+          restartPolicy: OnFailure

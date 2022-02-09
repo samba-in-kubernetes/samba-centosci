@@ -1,0 +1,12 @@
+FROM quay.io/centos/centos:stream
+
+RUN dnf install -y \
+  python3-pip && \
+  pip3 install kubernetes && \
+  dnf -y clean all
+
+ADD prune-images.py /opt/prune/
+
+WORKDIR /opt/prune
+
+CMD ["python3", "prune-images.py"]
