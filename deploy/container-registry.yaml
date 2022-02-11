@@ -28,15 +28,16 @@ stringData:
 # Use Image Pull secrets if needed by adding to Service Account:
 #   $ oc secrets link default <secret-name> --for=pull
 ---
-apiVersion: apps.openshift.io/v1
-kind: DeploymentConfig
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: container-registry
   labels:
     app: container-registry
 spec:
-  triggers:
-    - type: ConfigChange
+  selector:
+    matchLabels:
+      name: container-registry
   replicas: 1
   template:
     metadata:
