@@ -1,0 +1,75 @@
+- project:
+    name: samba_sink_mini_k8s
+    k8s_version:
+      - '1.21'
+      - '1.22'
+      - '1.23'
+    jobs:
+      - 'samba_sink-mini-k8s-{k8s_version}-clustered'
+
+- job-template:
+    name: 'samba_sink-mini-k8s-{k8s_version}-clustered'
+    node: cico-workspace
+    description: Run SINK clustered deployment tests in minikube(multinode)
+    project-type: freestyle
+    concurrent: true
+
+    parameters:
+      - string:
+          name: CENTOS_VERSION
+          default: '8-stream'
+          description: CentOS version to be installed on host node
+      - string:
+          name: KUBE_VERSION
+          default: '{k8s_version}'
+          description: Kubernetes version to be used inside minikube cluster
+
+    wrappers:
+      - credentials-binding:
+          - username-password-separated:
+              credential-id: samba-container-registry-auth
+              username: IMG_REGISTRY_AUTH_USR
+              password: IMG_REGISTRY_AUTH_PASSWD
+
+    scm:
+    - git:
+        url: https://github.com/anoopcs9/samba-centosci
+
+    properties:
+    - github:
+        url: https://github.com/samba-in-kubernetes/samba-operator
+    - build-discarder:
+        days-to-keep: 7
+        artifacts-days-to-keep: 7
+
+    triggers:
+    - timed: "H 2 * * *"
+    - github-pull-request:
+        admin-list:
+          - obnoxxx
+          - phlogistonjohn
+          - gd
+          - spuiuk
+          - raghavendra-talur
+          - synarete
+          - anoopcs9
+        cron: H/5 * * * *
+        status-context: 'centos-ci/sink-clustered/mini-k8s-{k8s_version}'
+
+    builders:
+    - shell: !include-raw-escape: scripts/common/get-node.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/sink-clustered-deployment/sink-clustered-deployment.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch IMG_REGISTRY_AUTH_USR=$IMG_REGISTRY_AUTH_USR IMG_REGISTRY_AUTH_PASSWD=$IMG_REGISTRY_AUTH_PASSWD KUBE_VERSION=$KUBE_VERSION"
+
+    publishers:
+    - email-ext:
+        recipients: anoopcs@samba.org
+        reply-to: $DEFAULT_REPLYTO
+        subject: $DEFAULT_SUBJECT
+        content-type: text
+        body: $DEFAULT_CONTENT
+        attach-build-log: true
+    - post-tasks:
+        - matches:
+            - log-text: Building remotely
+          script:
+            !include-raw-escape: scripts/common/return-node.sh
