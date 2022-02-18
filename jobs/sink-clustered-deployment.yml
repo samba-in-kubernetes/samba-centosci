@@ -45,6 +45,7 @@
     triggers:
     - timed: "H 2 * * *"
     - github-pull-request:
+        trigger-phrase: '/(re)?test ((all)|(centos-ci/sink-clustered/mini-k8s-({k8s_version})?))'
         admin-list:
           - obnoxxx
           - phlogistonjohn
