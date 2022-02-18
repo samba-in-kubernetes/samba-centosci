@@ -59,6 +59,7 @@
 
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
+    - shell: jobs/scripts/common/copy.sh "$WORKSPACE/jobs/scripts/sink-clustered-deployment/sink-common.sh"
     - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/sink-clustered-deployment/sink-clustered-deployment.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch IMG_REGISTRY_AUTH_USR=$IMG_REGISTRY_AUTH_USR IMG_REGISTRY_AUTH_PASSWD=$IMG_REGISTRY_AUTH_PASSWD KUBE_VERSION=$KUBE_VERSION"
 
     publishers:
