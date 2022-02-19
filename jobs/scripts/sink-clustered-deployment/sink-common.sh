@@ -8,6 +8,8 @@ ROOK_URL="https://raw.githubusercontent.com/rook/rook/${ROOK_VERSION}/deploy/exa
 ROOK_TEMP_DIR=${ROOK_TEMP_DIR:-""}
 
 KUBE_VERSION=${KUBE_VERSION:-"latest"}
+KUBECTL_RETRY=5
+KUBECTL_RETRY_DELAY=10
 CONTAINER_CMD=${CONTAINER_CMD:-"podman"}
 
 MINIKUBE_ARCH=${MINIKUBE_ARCH:-"amd64"}
@@ -40,6 +42,37 @@ install_binaries() {
 	install kubectl /usr/local/sbin/kubectl
 }
 
+kubectl_retry() {
+	retries=0
+	ret=0
+
+	stdout=$(mktemp rook-kubectl-stdout.XXXXXXXX)
+	stderr=$(mktemp rook-kubectl-stderr.XXXXXXXX)
+
+	while ! kubectl "${@}" 2>"${stderr}" 1>"${stdout}"
+	do
+		retries=$((retries+1))
+		if [ ${retries} -eq ${KUBECTL_RETRY} ]; then
+			ret=1
+			break
+		fi
+
+		cat "${stderr}" > /dev/stderr
+		true > "${stderr}"
+		echo "kubectl_retry ${*} failed, will retry in ${KUBECTL_RETRY_DELAY} seconds"
+		cat /dev/null > /dev/stdout
+
+		sleep ${KUBECTL_RETRY_DELAY}
+	done
+
+	cat "${stdout}" > /dev/stdout
+	cat "${stderr}" > /dev/stderr
+
+	rm -f "${stdout}" "${stderr}"
+
+	return ${ret}
+}
+
 setup_minikube() {
 	install_binaries
 
@@ -54,7 +87,7 @@ setup_minikube() {
 
 	echo "Wait for k8s cluster..."
 	for ((retry = 0; retry <= 20; retry = retry + 2)); do
-		kubectl -n kube-system rollout status deployment coredns
+		kubectl_retry -n kube-system rollout status deployment coredns
 		deployment_status=$?
 		if [ "${deployment_status}" -eq 0 ]; then
 			echo -e "\nThree node k8s cluster ready [${retry}s]"
@@ -124,9 +157,9 @@ deploy_rook() {
 	echo "Wait for rook deploy..."
 	# Wait for Ceph cluster to be HEALTHY
 	for ((retry = 0; retry <= ROOK_DEPLOY_TIMEOUT; retry = retry + 10)); do
-		CEPH_STATE=$(kubectl -n rook-ceph get cephclusters \
+		CEPH_STATE=$(kubectl_retry -n rook-ceph get cephclusters \
 				-o jsonpath='{.items[0].status.state}')
-		CEPH_HEALTH=$(kubectl -n rook-ceph get cephclusters \
+		CEPH_HEALTH=$(kubectl_retry -n rook-ceph get cephclusters \
 				-o jsonpath='{.items[0].status.ceph.health}')
 		if [ "$CEPH_STATE" = "Created" ]; then
 			if [ "$CEPH_HEALTH" = "HEALTH_OK" ]; then
@@ -189,10 +222,10 @@ deploy_op() {
 
 	echo "Wait for operator deployment..."
 	for ((retry = 0; retry <= 60; retry = retry + 2)); do
-		podstatus=$(kubectl -n samba-operator-system get pod \
+		podstatus=$(kubectl_retry -n samba-operator-system get pod \
 				-l control-plane=controller-manager \
 				-o jsonpath='{.items[0].status.phase}')
-		kubectl -n samba-operator-system rollout status \
+		kubectl_retry -n samba-operator-system rollout status \
 			deployment samba-operator-controller-manager
 		deployment_status=$?
 		if [ "${podstatus}" = "Running" ]; then
