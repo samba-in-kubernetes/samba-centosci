@@ -18,6 +18,9 @@ ${CONTAINER_CMD} login --authfile=".podman-auth.json" \
 	--username="${IMG_REGISTRY_AUTH_USR}" \
 	--password="${IMG_REGISTRY_AUTH_PASSWD}" ${CI_IMG_REGISTRY}
 
+REGISTRY_AUTH_FILE="$(readlink -f .podman-auth.json)"
+export REGISTRY_AUTH_FILE
+
 setup_minikube
 
 deploy_rook
@@ -27,9 +30,7 @@ image_pull ${CI_IMG_REGISTRY} "docker.io" "golang:1.17"
 # Git clone samba-operator repository
 git clone --depth=1 --branch="${SINK_OPERATOR_GIT_BRANCH}" "${SINK_OPERATOR_GIT_REPO}"
 
-pushd samba-operator
-# Deploy basic test ad server
-./tests/test-deploy-ad-server.sh
+pushd samba-operator || exit 1
 
 if [ -n "${ghprbPullId}" ]; then
 	# We have to fetch the whole target branch to be able to rebase.
@@ -49,57 +50,35 @@ if [ -n "${ghprbPullId}" ]; then
 	CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-pr${ghprbPullId}"
 fi
 
-# Build and push samba-operator image to CI registry
-IMG="${CI_IMG_REGISTRY}/sink/samba-operator:${CI_IMG_TAG}" make image-build
-"${CONTAINER_CMD}" push --authfile="../.podman-auth.json" \
-	"${CI_IMG_REGISTRY}/sink/samba-operator:${CI_IMG_TAG}"
+CI_IMG_OP="${CI_IMG_REGISTRY}/sink/samba-operator:${CI_IMG_TAG}"
 
-# Enable experimental CTDB support
-make kustomize
-pushd config/default
-../../.bin/kustomize edit add configmap controller-cfg --behavior=merge \
-	--from-literal="SAMBA_OP_CLUSTER_SUPPORT=ctdb-is-experimental"
-sed -i '$a\  namespace: system' kustomization.yaml
-popd
+# Build and push operator image to local CI registry
+IMG="${CI_IMG_OP}" make image-build
+IMG="${CI_IMG_OP}" make container-push
 
-# Finally, deploy
-IMG="${CI_IMG_REGISTRY}/sink/samba-operator:${CI_IMG_TAG}" make deploy
+#enable_ctdb
 
-echo "Wait for operator deployment..."
-for ((retry = 0; retry <= 60; retry = retry + 2)); do
-	podstatus=$(kubectl -n samba-operator-system get pod \
-			-l control-plane=controller-manager \
-			-o jsonpath='{.items[0].status.phase}')
-	kubectl -n samba-operator-system rollout status \
-		deployment samba-operator-controller-manager
-	deployment_status=$?
-	if [ "${podstatus}" = "Running" ]; then
-		if [ "${deployment_status}" -eq 0 ]; then
-			echo "Operator deployed successfully [${retry}s]"
-			break
-		fi
-	fi
-
-	sleep 2
-	echo -n "."
-done
-
-if [ "${retry}" -gt 60 ]; then
-	echo "Operator deployment failed (timeout: 60s)"
-	exit 1
-fi
+deploy_op
 
 kubectl get pods -A
 
 kubectl -n kube-system describe pod storage-provisioner
 
-make delete-deploy
+IMG="${CI_IMG_OP}" make test
 
-popd
+# Deploy basic test ad server
+./tests/test-deploy-ad-server.sh
+
+# Run integration tests
+SMBOP_TEST_EXPECT_MANAGER_IMG="${CI_IMG_OP}" \
+	SMBOP_TEST_KUSTOMIZE="../../.bin/kustomize" ./tests/test.sh
+
+teardown_op
+
+popd || exit 1
 
 # Mark current operator image for deletion from CI registry
-skopeo delete --authfile=".podman-auth.json" \
-	"docker://${CI_IMG_REGISTRY}/sink/samba-operator:${CI_IMG_TAG}"
+skopeo delete "docker://${CI_IMG_OP}"
 
 teardown_rook
 

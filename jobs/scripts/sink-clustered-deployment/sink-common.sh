@@ -22,8 +22,8 @@ DISK_SIZE=${DISK_SIZE:-"10g"}
 DISK_CONFIG=${DISK_CONFIG:-" --extra-disks=${NUM_DISKS} --disk-size=${DISK_SIZE}"}
 
 image_pull() {
-	${CONTAINER_CMD} pull --authfile=".podman-auth.json" "${1}"/"${3}" && \
-	${CONTAINER_CMD} tag "${1}"/"${3}" "${2}"/"${3}"
+	${CONTAINER_CMD} pull "${1}"/"${3}" && \
+		${CONTAINER_CMD} tag "${1}"/"${3}" "${2}"/"${3}"
 }
 
 install_binaries() {
@@ -57,7 +57,7 @@ setup_minikube() {
 		podstatus=$(kubectl -n kube-system get pod storage-provisioner \
 				-o jsonpath='{.status.phase}')
 		if [ "${podstatus}" = "Running" ]; then
-			echo "Basic k8s cluster is up and running [${retry}s]"
+			echo -e "\nBasic 3 node k8s cluster setup done [${retry}s]"
 			break
 		fi
 
@@ -75,7 +75,7 @@ setup_minikube() {
 	# Configure nodes to authenticate to CI registry(copy config.json)
 	nodes=$(kubectl get nodes -o jsonpath='{range.items[*].metadata}{.name} {end}')
 	for n in $nodes; do
-		cat < .podman-auth.json | ssh -o UserKnownHostsFile=/dev/null \
+		cat < "${REGISTRY_AUTH_FILE}" | ssh -o UserKnownHostsFile=/dev/null \
 			-o StrictHostKeyChecking=no -i "$(minikube ssh-key -n "$n")" \
 			-l docker "$(minikube ip -n "$n")" \
 			"sudo tee /var/lib/kubelet/config.json > /dev/null";
@@ -126,7 +126,7 @@ deploy_rook() {
 				-o jsonpath='{.items[0].status.ceph.health}')
 		if [ "$CEPH_STATE" = "Created" ]; then
 			if [ "$CEPH_HEALTH" = "HEALTH_OK" ]; then
-				echo "Creating Ceph cluster is done. [${retry}s]"
+				echo -e "\nCreating Ceph cluster is done [${retry}s]"
 				break
 			fi
 		fi
@@ -166,6 +166,47 @@ teardown_rook() {
 	kubectl delete -f "${ROOK_TEMP_DIR}/crds.yaml" -f "${ROOK_TEMP_DIR}/common.yaml" -f "${ROOK_TEMP_DIR}/operator.yaml"
 
 	rm -rf "${ROOK_TEMP_DIR}"
+}
+
+enable_ctdb() {
+	make kustomize
+	pushd config/default || exit 1
+	../../.bin/kustomize edit add configmap controller-cfg --behavior=merge \
+		--from-literal="SAMBA_OP_CLUSTER_SUPPORT=ctdb-is-experimental"
+	sed -i '$a\  namespace: system' kustomization.yaml
+	popd || exit 1
+}
+
+deploy_op() {
+	IMG="${CI_IMG_OP}" make deploy
+
+	echo "Wait for operator deployment..."
+	for ((retry = 0; retry <= 60; retry = retry + 2)); do
+		podstatus=$(kubectl -n samba-operator-system get pod \
+				-l control-plane=controller-manager \
+				-o jsonpath='{.items[0].status.phase}')
+		kubectl -n samba-operator-system rollout status \
+			deployment samba-operator-controller-manager
+		deployment_status=$?
+		if [ "${podstatus}" = "Running" ]; then
+			if [ "${deployment_status}" -eq 0 ]; then
+				echo -e "\nOperator deployed successfully [${retry}s]"
+				break
+			fi
+		fi
+
+		sleep 2
+		echo -n "."
+	done
+
+	if [ "${retry}" -gt 60 ]; then
+		echo "Operator deployment failed (timeout: 60s)"
+		exit 1
+	fi
+}
+
+teardown_op() {
+	make delete-deploy
 }
 
 # kubelet.resolv-conf needs to point to a file, not a symlink
