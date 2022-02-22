@@ -208,10 +208,15 @@ teardown_rook() {
 	rm -rf "${ROOK_TEMP_DIR}"
 }
 
-enable_ctdb() {
+install_kustomize() {
 	make kustomize
+	KUSTOMIZE=$(readlink -f .bin/kustomize)
+	export KUSTOMIZE
+}
+
+enable_ctdb() {
 	pushd config/default || exit 1
-	../../.bin/kustomize edit add configmap controller-cfg --behavior=merge \
+	${KUSTOMIZE} edit add configmap controller-cfg --behavior=merge \
 		--from-literal="SAMBA_OP_CLUSTER_SUPPORT=ctdb-is-experimental"
 	sed -i '$a\  namespace: system' kustomization.yaml
 	popd || exit 1

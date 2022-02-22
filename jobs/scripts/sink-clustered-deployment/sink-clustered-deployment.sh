@@ -56,6 +56,8 @@ CI_IMG_OP="${CI_IMG_REGISTRY}/sink/samba-operator:${CI_IMG_TAG}"
 IMG="${CI_IMG_OP}" make image-build
 IMG="${CI_IMG_OP}" make container-push
 
+install_kustomize
+
 #enable_ctdb
 
 deploy_op
@@ -68,8 +70,7 @@ IMG="${CI_IMG_OP}" make test
 ./tests/test-deploy-ad-server.sh
 
 # Run integration tests
-SMBOP_TEST_EXPECT_MANAGER_IMG="${CI_IMG_OP}" \
-	SMBOP_TEST_KUSTOMIZE="../../.bin/kustomize" ./tests/test.sh
+SMBOP_TEST_EXPECT_MANAGER_IMG="${CI_IMG_OP}" ./tests/test.sh
 
 teardown_op
 
