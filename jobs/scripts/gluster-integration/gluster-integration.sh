@@ -71,7 +71,7 @@ yum -y install epel-release
 yum -y install make ansible
 
 # We need ansible.posix collection for synchronize module
-ansible-galaxy collection install ansible.posix
+ansible-galaxy collection install git+https://github.com/ansible-collections/ansible.posix.git
 
 # Install QEMU-KVM and Libvirt packages
 yum -y install qemu-kvm qemu-img libvirt libvirt-devel
