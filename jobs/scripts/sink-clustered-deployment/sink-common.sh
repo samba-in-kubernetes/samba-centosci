@@ -46,18 +46,18 @@ setup_minikube() {
 	# Start a kuberentes cluster using minikube
 	minikube start --force --driver="${VM_DRIVER}" --nodes="${NODE_COUNT}" \
 		--memory="${MEMORY}" --cpus="${CPUS}" ${DISK_CONFIG} \
-		-b kubeadm --kubernetes-version="${KUBE_VERSION}" ${EXTRA_CONFIG} \
-		--delete-on-failure
+		-b kubeadm --kubernetes-version="${KUBE_VERSION}" \
+		${EXTRA_CONFIG} --delete-on-failure
 
 	image_pull "${CI_IMG_REGISTRY}" "docker.io" "kindest/kindnetd:v20210326-1e038dc5"
 	minikube image load docker.io/kindest/kindnetd:v20210326-1e038dc5
 
-	echo "Wait for basic k8s cluster..."
+	echo "Wait for k8s cluster..."
 	for ((retry = 0; retry <= 20; retry = retry + 2)); do
 		podstatus=$(kubectl -n kube-system get pod storage-provisioner \
 				-o jsonpath='{.status.phase}')
 		if [ "${podstatus}" = "Running" ]; then
-			echo -e "\nBasic 3 node k8s cluster setup done [${retry}s]"
+			echo -e "\n3 node k8s cluster setup done [${retry}s]"
 			break
 		fi
 
@@ -66,17 +66,20 @@ setup_minikube() {
 	done
 
 	if [ "${retry}" -gt 20 ]; then
-		echo "Basic k8s cluster failed to come up (timeout: 20s)"
+		echo -e "\nFailed to setup multinode k8s cluster (timeout: 20s)"
 		exit 1
 	fi
 
 	kubectl cluster-info
 
 	# Configure nodes to authenticate to CI registry(copy config.json)
-	nodes=$(kubectl get nodes -o jsonpath='{range.items[*].metadata}{.name} {end}')
+	nodes=$(kubectl get nodes \
+			-o jsonpath='{range.items[*].metadata}{.name} {end}')
 	for n in $nodes; do
-		cat < "${REGISTRY_AUTH_FILE}" | ssh -o UserKnownHostsFile=/dev/null \
-			-o StrictHostKeyChecking=no -i "$(minikube ssh-key -n "$n")" \
+		cat < "${REGISTRY_AUTH_FILE}" | ssh \
+			-o UserKnownHostsFile=/dev/null \
+			-o StrictHostKeyChecking=no \
+			-i "$(minikube ssh-key -n "$n")" \
 			-l docker "$(minikube ip -n "$n")" \
 			"sudo tee /var/lib/kubelet/config.json > /dev/null";
 	done
@@ -95,14 +98,15 @@ deploy_rook() {
 	curl -o "${ROOK_TEMP_DIR}/common.yaml" "${ROOK_URL}/common.yaml"
 	curl -o "${ROOK_TEMP_DIR}/operator.yaml" "${ROOK_URL}/operator.yaml"
 
-	kubectl create -f "${ROOK_TEMP_DIR}/crds.yaml" \
-			-f "${ROOK_TEMP_DIR}/common.yaml" \
-			-f "${ROOK_TEMP_DIR}/operator.yaml"
+	kubectl create -f "${ROOK_TEMP_DIR}/common.yaml"
+	kubectl create -f "${ROOK_TEMP_DIR}/crds.yaml"
+	kubectl create -f "${ROOK_TEMP_DIR}/operator.yaml"
 
 	curl -o "${ROOK_TEMP_DIR}/cluster.yaml" "${ROOK_URL}/cluster.yaml"
 
 	# Use /data/rook as host path in case of minikube cluster
-	sed -i '/^ *dataDirHostPath/s/\/var\/lib\/rook/\/data\/rook/' "${ROOK_TEMP_DIR}"/cluster.yaml
+	sed -i '/^ *dataDirHostPath/s/\/var\/lib\/rook/\/data\/rook/' \
+		"${ROOK_TEMP_DIR}"/cluster.yaml
 
 	# Consume only extra added disks
 	sed -i '/^ *useAllDevices/s/true/false/' "${ROOK_TEMP_DIR}"/cluster.yaml
@@ -126,7 +130,7 @@ deploy_rook() {
 				-o jsonpath='{.items[0].status.ceph.health}')
 		if [ "$CEPH_STATE" = "Created" ]; then
 			if [ "$CEPH_HEALTH" = "HEALTH_OK" ]; then
-				echo -e "\nCreating Ceph cluster is done [${retry}s]"
+				echo -e "\nCeph cluster created [${retry}s]"
 				break
 			fi
 		fi
@@ -136,7 +140,7 @@ deploy_rook() {
 	done
 
 	if [ "${retry}" -gt "$ROOK_DEPLOY_TIMEOUT" ]; then
-		echo "Ceph cluster unhealthy (timeout: ${ROOK_DEPLOY_TIMEOUT}s)"
+		echo -e "\nDeploying rook failed (timeout: ${ROOK_DEPLOY_TIMEOUT}s)"
 		exit 1
 	fi
 
@@ -145,12 +149,13 @@ deploy_rook() {
 	curl -o "${ROOK_TEMP_DIR}/pool.yaml" "${ROOK_URL}/pool.yaml"
 	curl -o "${ROOK_TEMP_DIR}/filesystem.yaml" "${ROOK_URL}/filesystem.yaml"
 
-	kubectl create -f "${ROOK_TEMP_DIR}/toolbox.yaml" \
-			-f "${ROOK_TEMP_DIR}/pool.yaml" \
-			-f "${ROOK_TEMP_DIR}/filesystem.yaml"
+	kubectl create -f "${ROOK_TEMP_DIR}/toolbox.yaml"
+	kubectl create -f "${ROOK_TEMP_DIR}/filesystem.yaml"
+	kubectl create -f "${ROOK_TEMP_DIR}/pool.yaml"
 
 	# Install and make Ceph filesystem storage class the default
-	curl -o "${ROOK_TEMP_DIR}/storageclass.yaml" "${ROOK_URL}/csi/cephfs/storageclass.yaml"
+	curl -o "${ROOK_TEMP_DIR}/storageclass.yaml" \
+		"${ROOK_URL}/csi/cephfs/storageclass.yaml"
 
 	kubectl create -f "${ROOK_TEMP_DIR}/storageclass.yaml"
 	kubectl patch storageclass rook-cephfs \
@@ -161,9 +166,13 @@ deploy_rook() {
 
 teardown_rook() {
 	kubectl delete -f "${ROOK_TEMP_DIR}/storageclass.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/toolbox.yaml" -f "${ROOK_TEMP_DIR}/pool.yaml" -f "${ROOK_TEMP_DIR}/filesystem.yaml"
+	kubectl delete -f "${ROOK_TEMP_DIR}/pool.yaml"
+	kubectl delete -f "${ROOK_TEMP_DIR}/filesystem.yaml"
+	kubectl delete -f "${ROOK_TEMP_DIR}/toolbox.yaml"
 	kubectl delete -f "${ROOK_TEMP_DIR}/cluster.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/crds.yaml" -f "${ROOK_TEMP_DIR}/common.yaml" -f "${ROOK_TEMP_DIR}/operator.yaml"
+	kubectl delete -f "${ROOK_TEMP_DIR}/operator.yaml"
+	kubectl delete -f "${ROOK_TEMP_DIR}/crds.yaml"
+	kubectl delete -f "${ROOK_TEMP_DIR}/common.yaml"
 
 	rm -rf "${ROOK_TEMP_DIR}"
 }
@@ -190,7 +199,8 @@ deploy_op() {
 		deployment_status=$?
 		if [ "${podstatus}" = "Running" ]; then
 			if [ "${deployment_status}" -eq 0 ]; then
-				echo -e "\nOperator deployed successfully [${retry}s]"
+				echo -e "\nOperator deployed and" \
+					"running successfully [${retry}s]"
 				break
 			fi
 		fi
@@ -200,7 +210,7 @@ deploy_op() {
 	done
 
 	if [ "${retry}" -gt 60 ]; then
-		echo "Operator deployment failed (timeout: 60s)"
+		echo -e "\nOperator deployment failed (timeout: 60s)"
 		exit 1
 	fi
 }
@@ -210,7 +220,7 @@ teardown_op() {
 }
 
 # kubelet.resolv-conf needs to point to a file, not a symlink
-# the default minikube VM has /etc/resolv.conf -> /run/systemd/resolve/resolv.conf
+# default minikube VM has /etc/resolv.conf -> /run/systemd/resolve/resolv.conf
 RESOLV_CONF="/run/systemd/resolve/resolv.conf"
 if [[ ! -e "${RESOLV_CONF}" ]]; then
 	# in case /run/systemd/resolve/resolv.conf does not exist, use the
@@ -236,7 +246,8 @@ if [[ "${KUBE_VERSION}" == "latest" ]]; then
 	KUBE_VERSION=$(curl -L https://storage.googleapis.com/kubernetes-release/release/stable.txt 2> /dev/null)
 else
 	KUBE_VERSION=$(curl -L https://api.github.com/repos/kubernetes/kubernetes/releases | \
-			jq -r '.[].tag_name' | grep "${KUBE_VERSION}" | sort -V | tail -1)
+			jq -r '.[].tag_name' | grep "${KUBE_VERSION}" | \
+			sort -V | tail -1)
 fi
 
 # Start libvrit daemon
