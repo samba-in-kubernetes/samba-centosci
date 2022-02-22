@@ -62,8 +62,6 @@ deploy_op
 
 kubectl get pods -A
 
-kubectl -n kube-system describe pod storage-provisioner
-
 IMG="${CI_IMG_OP}" make test
 
 # Deploy basic test ad server

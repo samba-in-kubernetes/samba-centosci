@@ -46,18 +46,18 @@ setup_minikube() {
 	# Start a kuberentes cluster using minikube
 	minikube start --force --driver="${VM_DRIVER}" --nodes="${NODE_COUNT}" \
 		--memory="${MEMORY}" --cpus="${CPUS}" ${DISK_CONFIG} \
-		-b kubeadm --kubernetes-version="${KUBE_VERSION}" \
-		${EXTRA_CONFIG} --delete-on-failure
+		--delete-on-failure --install-addons=false -b kubeadm \
+		--kubernetes-version="${KUBE_VERSION}" ${EXTRA_CONFIG}
 
 	image_pull "${CI_IMG_REGISTRY}" "docker.io" "kindest/kindnetd:v20210326-1e038dc5"
 	minikube image load docker.io/kindest/kindnetd:v20210326-1e038dc5
 
 	echo "Wait for k8s cluster..."
 	for ((retry = 0; retry <= 20; retry = retry + 2)); do
-		podstatus=$(kubectl -n kube-system get pod storage-provisioner \
-				-o jsonpath='{.status.phase}')
-		if [ "${podstatus}" = "Running" ]; then
-			echo -e "\n3 node k8s cluster setup done [${retry}s]"
+		kubectl -n kube-system rollout status deployment coredns
+		deployment_status=$?
+		if [ "${deployment_status}" -eq 0 ]; then
+			echo -e "\nThree node k8s cluster ready [${retry}s]"
 			break
 		fi
 
@@ -160,8 +160,6 @@ deploy_rook() {
 	kubectl create -f "${ROOK_TEMP_DIR}/storageclass.yaml"
 	kubectl patch storageclass rook-cephfs \
 		-p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-	kubectl patch storageclass standard \
-		-p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 }
 
 teardown_rook() {
