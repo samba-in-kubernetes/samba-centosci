@@ -75,6 +75,7 @@ kubectl_retry() {
 
 setup_minikube() {
 	install_binaries
+	image_pull "${CI_IMG_REGISTRY}" "docker.io" "kindest/kindnetd:v20210326-1e038dc5"
 
 	# Start a kuberentes cluster using minikube
 	minikube start --force --driver="${VM_DRIVER}" --nodes="${NODE_COUNT}" \
@@ -82,7 +83,6 @@ setup_minikube() {
 		--delete-on-failure --install-addons=false -b kubeadm \
 		--kubernetes-version="${KUBE_VERSION}" ${EXTRA_CONFIG}
 
-	image_pull "${CI_IMG_REGISTRY}" "docker.io" "kindest/kindnetd:v20210326-1e038dc5"
 	minikube image load docker.io/kindest/kindnetd:v20210326-1e038dc5
 
 	echo "Wait for k8s cluster..."
