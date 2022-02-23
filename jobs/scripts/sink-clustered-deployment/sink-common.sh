@@ -3,7 +3,7 @@
 CI_IMG_REGISTRY=${CI_IMG_REGISTRY:-"registry-samba.apps.ocp.ci.centos.org"}
 
 ROOK_VERSION=${ROOK_VERSION:-"master"}
-ROOK_DEPLOY_TIMEOUT=${ROOK_DEPLOY_TIMEOUT:-600}
+ROOK_DEPLOY_TIMEOUT=${ROOK_DEPLOY_TIMEOUT:-900}
 ROOK_URL="https://raw.githubusercontent.com/rook/rook/${ROOK_VERSION}/deploy/examples"
 ROOK_TEMP_DIR=${ROOK_TEMP_DIR:-""}
 
