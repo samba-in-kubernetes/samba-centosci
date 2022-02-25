@@ -6,26 +6,19 @@ SINK_OPERATOR_GIT_BRANCH=${SINK_OPERATOR_GIT_BRANCH:-"master"}
 KUBE_VERSION=${KUBE_VERSION:-"latest"}
 CONTAINER_CMD=${CONTAINER_CMD:-"podman"}
 
+CI_IMG_REGISTRY="registry-samba.apps.ocp.ci.centos.org"
+CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-run"
+
 # Exit immediately if a command exits with non-zero status
 set -e
 
-source sink-common.sh
-
-CI_IMG_REGISTRY="registry-samba.apps.ocp.ci.centos.org"
-CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-run"
+dnf -y install git podman skopeo
 
 ${CONTAINER_CMD} login --authfile=".podman-auth.json" \
 	--username="${IMG_REGISTRY_AUTH_USR}" \
 	--password="${IMG_REGISTRY_AUTH_PASSWD}" ${CI_IMG_REGISTRY}
 
 REGISTRY_AUTH_FILE="$(readlink -f .podman-auth.json)"
-export REGISTRY_AUTH_FILE
-
-setup_minikube
-
-deploy_rook
-
-image_pull ${CI_IMG_REGISTRY} "docker.io" "golang:1.17"
 
 # Git clone samba-operator repository
 git clone --depth=1 --branch="${SINK_OPERATOR_GIT_BRANCH}" "${SINK_OPERATOR_GIT_REPO}"
@@ -52,35 +45,13 @@ fi
 
 CI_IMG_OP="${CI_IMG_REGISTRY}/sink/samba-operator:${CI_IMG_TAG}"
 
-# Build and push operator image to local CI registry
-IMG="${CI_IMG_OP}" make image-build
-IMG="${CI_IMG_OP}" make container-push
+export CONTAINER_CMD REGISTRY_AUTH_FILE CI_IMG_REGISTRY CI_IMG_OP
 
-install_kustomize
-
-#enable_ctdb
-
-deploy_op
-
-kubectl get pods -A
-
-IMG="${CI_IMG_OP}" make test
-
-# Deploy basic test ad server
-./tests/test-deploy-ad-server.sh
-
-# Run integration tests
-SMBOP_TEST_EXPECT_MANAGER_IMG="${CI_IMG_OP}" ./tests/test.sh
-
-teardown_op
-
-popd || exit 1
+./tests/centosci/sink-clustered-deployment.sh
 
 # Mark current operator image for deletion from CI registry
 skopeo delete "docker://${CI_IMG_OP}"
 
-teardown_rook
-
-destroy_minikube
+popd || exit 1
 
 exit 0
