@@ -2,9 +2,8 @@
 
 CI_IMG_REGISTRY=${CI_IMG_REGISTRY:-"registry-samba.apps.ocp.ci.centos.org"}
 
-ROOK_VERSION=${ROOK_VERSION:-"master"}
+ROOK_VERSION=${ROOK_VERSION:-"latest"}
 ROOK_DEPLOY_TIMEOUT=${ROOK_DEPLOY_TIMEOUT:-900}
-ROOK_URL="https://raw.githubusercontent.com/rook/rook/${ROOK_VERSION}/deploy/examples"
 ROOK_TEMP_DIR=${ROOK_TEMP_DIR:-""}
 
 KUBE_VERSION=${KUBE_VERSION:-"latest"}
@@ -123,6 +122,8 @@ destroy_minikube() {
 }
 
 deploy_rook() {
+	ROOK_URL="https://raw.githubusercontent.com/rook/rook/${ROOK_VERSION}/deploy/examples"
+
 	if [ -z "${ROOK_TEMP_DIR}" ]; then
 		ROOK_TEMP_DIR=$(mktemp -d)
 	fi
@@ -283,6 +284,15 @@ if [[ "${KUBE_VERSION}" == "latest" ]]; then
 else
 	KUBE_VERSION=$(curl -L https://api.github.com/repos/kubernetes/kubernetes/releases | \
 			jq -r '.[].tag_name' | grep "${KUBE_VERSION}" | \
+			sort -V | tail -1)
+fi
+
+if [[ "${ROOK_VERSION}" == "latest" ]]; then
+	ROOK_VERSION=$(curl -L https://api.github.com/repos/rook/rook/releases | \
+			jq -r '.[].tag_name' | sort -V | tail -1)
+else
+	ROOK_VERSION=$(curl -L https://api.github.com/repos/rook/rook/releases | \
+			jq -r '.[].tag_name' | grep "${ROOK_VERSION}" | \
 			sort -V | tail -1)
 fi
 
