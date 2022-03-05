@@ -197,14 +197,17 @@ deploy_rook() {
 }
 
 teardown_rook() {
-	kubectl delete -f "${ROOK_TEMP_DIR}/storageclass.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/pool.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/filesystem.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/toolbox.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/cluster.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/operator.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/crds.yaml"
-	kubectl delete -f "${ROOK_TEMP_DIR}/common.yaml"
+	# Probable issue in cleaning up the ceph cluster is that the rook-ceph
+	# namespace or the ceph cluster CRD may remain indefinitely in a
+	# terminating state. It is therefore recommended to directly reset the
+	# entire k8s cluster without worrying about the following individual
+	# resource cleanups.
+	#
+	#items=("storageclass.yaml" "pool.yaml" "filesystem.yaml" "toolbox.yaml" \
+	#	"cluster.yaml" "operator.yaml" "crds.yaml" "common.yaml")
+	#for i in "${items[@]}"; do
+	#	kubectl delete -f "${ROOK_TEMP_DIR}/$i"
+	#done
 
 	rm -rf "${ROOK_TEMP_DIR}"
 }
