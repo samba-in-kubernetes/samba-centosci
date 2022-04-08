@@ -27,11 +27,9 @@ set -x
 
 # Install basic dependencies for building the tarball and srpm.
 # epel is needed to get more up-to-date versions of mock and ansible.
-yum -y install epel-release
-yum -y install git make rpm-build mock ansible createrepo_c
-
-# We need ansible.posix collection for synchronize module
-ansible-galaxy collection install git+https://github.com/ansible-collections/ansible.posix.git
+yum -y install epel-release epel-next-release
+yum -y install git make rpm-build mock createrepo_c \
+	ansible-core ansible-collection-ansible-posix
 
 # Install QEMU-KVM and Libvirt packages
 yum -y install qemu-kvm qemu-img libvirt libvirt-devel

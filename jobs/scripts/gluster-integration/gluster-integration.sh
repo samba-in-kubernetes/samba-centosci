@@ -66,12 +66,9 @@ fi
 #
 
 # enable additional sources for yum:
-# - epel for ansible
-yum -y install epel-release
-yum -y install make ansible
+yum -y install epel-release epel-next-release
 
-# We need ansible.posix collection for synchronize module
-ansible-galaxy collection install git+https://github.com/ansible-collections/ansible.posix.git
+yum -y install make ansible-core ansible-collection-ansible-posix
 
 # Install QEMU-KVM and Libvirt packages
 yum -y install qemu-kvm qemu-img libvirt libvirt-devel
