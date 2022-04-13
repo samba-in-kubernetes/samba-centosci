@@ -40,6 +40,28 @@ if [ -n "${ghprbPullId}" ]; then
 		exit 1
 	fi
 
+	skip=0
+	declare -a SKIP_FILES=(^docs/ .md$ LICENSE .codespellignore \
+				.codespellrc .github .gitignore .golangci.yaml \
+				.revive.toml .yamllint.yaml)
+
+	readarray FILES_CHANGED < <(git diff --name-only origin/"${ghprbTargetBranch}")
+
+	for i in "${FILES_CHANGED[@]}"
+	do
+		for j in "${SKIP_FILES[@]}"
+		do
+			if ! [[ "$i" =~ "$j" ]]; then
+				skip=1
+			fi
+		done
+	done
+
+	if [ ${skip} -eq 0 ]; then
+		echo "Doc/Format-Spec only change, skipping..."
+		exit 0
+	fi
+
 	CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-pr${ghprbPullId}"
 fi
 
