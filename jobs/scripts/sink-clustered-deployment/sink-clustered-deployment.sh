@@ -40,24 +40,29 @@ if [ -n "${ghprbPullId}" ]; then
 		exit 1
 	fi
 
-	skip=0
-	declare -a SKIP_FILES=(^docs/ .md$ LICENSE .codespellignore \
-				.codespellrc .github .gitignore .golangci.yaml \
-				.revive.toml .yamllint.yaml)
+	declare -a SKIP_FILES=(docs/ .md LICENSE .codespellignore .codespellrc \
+				.github .gitignore .golangci.yaml .revive.toml \
+				.yamllint.yaml)
 
 	readarray FILES_CHANGED < <(git diff --name-only origin/"${ghprbTargetBranch}")
 
+	proceed=0
 	for i in "${FILES_CHANGED[@]}"
 	do
+		found=0
 		for j in "${SKIP_FILES[@]}"
 		do
-			if ! [[ "$i" =~ "$j" ]]; then
-				skip=1
+			if [[ "$i" =~ "$j" ]]; then
+				found=1
+				break
 			fi
 		done
+		if [ ${found} -eq 0 ]; then
+			proceed=1
+		fi
 	done
 
-	if [ ${skip} -eq 0 ]; then
+	if [ ${proceed} -eq 0 ]; then
 		echo "Doc/Format-Spec only change, skipping..."
 		exit 0
 	fi
