@@ -1,9 +1,9 @@
 - project:
     name: samba_sink_mini_k8s
     k8s_version:
-      - '1.21'
       - '1.22'
       - '1.23'
+      - '1.24'
     jobs:
       - 'samba_sink-mini-k8s-{k8s_version}-clustered'
 
