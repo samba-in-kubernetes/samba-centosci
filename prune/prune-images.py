@@ -83,7 +83,7 @@ def main():
     reg_pod = pods.items[0].metadata.name
 
     exec_command = ['/bin/sh', '-c',
-                    '/bin/registry garbage-collect --delete-untagged=true /etc/docker/registry/config.yml']
+                    '/bin/registry garbage-collect --delete-untagged /etc/docker/registry/config.yml']
     rsp = stream(v1.connect_get_namespaced_pod_exec,
                  reg_pod, namespace, command=exec_command,
                  stderr=True, stdin=False, stdout=True, tty=False)
