@@ -2,7 +2,7 @@
     name: samba_nightly-rpm-builds
     os_version:
       - 'centos8'
-      - 'centos7'
+      - 'centos9'
       - 'fedora36'
       - 'fedora35'
     samba_branch:
