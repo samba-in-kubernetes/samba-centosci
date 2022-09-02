@@ -15,8 +15,9 @@ REPO_FILE="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${PLATFORM}/${REPO_NAME}.repo"
 
 artifact()
 {
-    [ -e ~/rsync.passwd ] || return 0
-    rsync -av --password-file ~/rsync.passwd "${@}" samba@artifacts.ci.centos.org::samba/pkgs/
+    [ -e ~/ssh-privatekey ] || return 0
+    scp -q -o StrictHostKeyChecking=no -i ~/ssh-privatekey -r "${@}" \
+	samba@artifacts.ci.aws.centos.org:/srv/artifacts/samba/pkgs/
 }
 
 # if anything fails, we'll abort
@@ -44,7 +45,7 @@ then
 	# including libvirt plugin instead of upstream version with added
 	# difficulty of rebuilding krb5 and libssh libraries.
 	dnf -y copr enable pvalena/vagrant
-	dnf -y install vagrant vagrant-libvirt rsync
+	dnf -y install vagrant vagrant-libvirt
 
 	# QEMU would require search permission inside root's home for accessing
 	# libvirt specific images under /root/.local/share/libvirt/images/
