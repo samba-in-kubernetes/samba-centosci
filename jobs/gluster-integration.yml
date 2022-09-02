@@ -7,7 +7,7 @@
 
     parameters:
     - string:
-        default: '8-stream'
+        default: '8s'
         description: CentOS version to be installed on host node
         name: CENTOS_VERSION
 
