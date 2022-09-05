@@ -17,7 +17,7 @@ artifact()
 {
     [ -e ~/ssh-privatekey ] || return 0
     scp -q -o StrictHostKeyChecking=no -i ~/ssh-privatekey -r "${@}" \
-	samba@artifacts.ci.aws.centos.org:/srv/artifacts/samba/pkgs/
+	samba@artifacts.ci.centos.org:/srv/artifacts/samba/pkgs/
 }
 
 # if anything fails, we'll abort
