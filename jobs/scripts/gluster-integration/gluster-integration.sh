@@ -27,7 +27,7 @@ set -x
 # we are detecting that we are running on a PR that changes this script.
 #
 
-yum -y install git
+dnf -y install git
 
 rm -rf tests
 mkdir tests
@@ -65,46 +65,26 @@ fi
 # - prefetch vm image
 #
 
-# enable additional sources for yum:
-yum -y install epel-release epel-next-release
+# enable additional sources for dnf:
+dnf -y install epel-release epel-next-release
 
-yum -y install make ansible-core ansible-collection-ansible-posix
+dnf -y install make ansible-core ansible-collection-ansible-posix
 
 # Install QEMU-KVM and Libvirt packages
-yum -y install qemu-kvm qemu-img libvirt libvirt-devel
+dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
 
 # "Development Tools" are needed to run "vagrant plugin install"
-yum -y group install "Development Tools"
+dnf -y group install "Development Tools"
 
-if [ "${CENTOS_VERSION}" -ge "8" ]
-then
-	# Use Fedora COPR maintained builds for vagrant and its dependencies
-	# including libvirt plugin instead of upstream version with added
-	# difficulty of rebuilding krb5 and libssh libraries.
-	dnf -y copr enable pvalena/vagrant
-	dnf -y install vagrant vagrant-libvirt rsync
+# Use Fedora COPR maintained builds for vagrant and its dependencies
+# including libvirt plugin instead of upstream version with added
+# difficulty of rebuilding krb5 and libssh libraries.
+dnf -y copr enable pvalena/vagrant
+dnf -y install vagrant vagrant-libvirt rsync
 
-	# QEMU would require search permission inside root's home for accessing
-	# libvirt specific images under /root/.local/share/libvirt/images/
-	setfacl -m u:qemu:x /root/
-else
-	# We install vagrant directly from upstream hashicorp since
-	# the centos/scl vagrant packages are deprecated / broken on CentOS 7.
-
-	# yum install fails if the package is already installed at the desired
-	# version, so we check whether vagrant is already installed at that
-	# version. This is important to check when the script is invoked a
-	# couple of times in a row to prevent it from failing. As a positive
-	# side effect, it also avoids duplicate downloads of the RPM.
-	#
-	VAGRANT_VERSION="2.2.14"
-	if ! rpm -q "vagrant-${VAGRANT_VERSION}"
-	then
-		yum -y install "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.rpm"
-	fi
-
-	vagrant plugin install vagrant-libvirt
-fi
+# QEMU would require search permission inside root's home for accessing
+# libvirt specific images under /root/.local/share/libvirt/images/
+setfacl -m u:qemu:x /root/
 
 # Vagrant needs libvirtd running
 systemctl start libvirtd
