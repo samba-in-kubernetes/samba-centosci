@@ -12,7 +12,7 @@ CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-run"
 # Exit immediately if a command exits with non-zero status
 set -e
 
-dnf -y install git podman skopeo
+dnf -y install git podman-4.0* containers-common-1-23* skopeo
 
 ${CONTAINER_CMD} login --authfile=".podman-auth.json" \
 	--username="${IMG_REGISTRY_AUTH_USR}" \
