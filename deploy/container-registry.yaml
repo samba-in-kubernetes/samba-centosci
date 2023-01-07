@@ -19,7 +19,7 @@ stringData:
   config.json: |-
     {
       "auths": {
-        "registry-samba.apps.ocp.ci.centos.org": {
+        "registry-samba.apps.ocp.cloud.ci.centos.org": {
           "auth": "@@SOME_B64ENCODED_STRING@@"
         }
       }

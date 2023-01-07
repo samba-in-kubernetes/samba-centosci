@@ -2,7 +2,7 @@
 
 This repository contains Jenkins Job Builder files and Openshift object specs for testing Samba and related integration projects. These jobs are run on OCP4 based [Jenkins][ocp4-jenkins] instance using [Jenkins Job Builder][jjb].
 
-[ocp4-jenkins]: https://jenkins-samba.apps.ocp.ci.centos.org/
+[ocp4-jenkins]: https://jenkins-samba.apps.ocp.cloud.ci.centos.org/
 [jjb]: https://jenkins-job-builder.readthedocs.io/en/latest/
 
 ## Respository breakdown

@@ -6,7 +6,7 @@ SINK_OPERATOR_GIT_BRANCH=${SINK_OPERATOR_GIT_BRANCH:-"master"}
 KUBE_VERSION=${KUBE_VERSION:-"latest"}
 CONTAINER_CMD=${CONTAINER_CMD:-"podman"}
 
-CI_IMG_REGISTRY="registry-samba.apps.ocp.ci.centos.org"
+CI_IMG_REGISTRY="registry-samba.apps.ocp.cloud.ci.centos.org"
 CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-run"
 
 # Exit immediately if a command exits with non-zero status
