@@ -32,29 +32,29 @@ cd tests
 git clone "${GIT_REPO_URL}"
 cd "${GIT_REPO_NAME}"
 
-# by default we clone the master branch, but maybe this was triggered through a PR?
-if [ -n "${ghprbPullId}" ]
-then
-	if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
+if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
+	if [ -n "${ghprbPullId}" ]; then
 		# Just invoke "make test" with the corresponding parameters.
 		TEST_EXTRA_VARS="test_repo=${GIT_REPO_URL} test_repo_pr=${ghprbPullId}"
 	else
+		echo "Skipping scheduled run"
+		exit 0
+	fi
+else
+	if [ -n "${ghprbPullId}" ]; then
+		# Run sanity tests only for pull requests on sit-environment
+		TEST_EXTRA_VARS="test_sanity_only=1"
+
 		git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
 		git checkout "pr_${ghprbPullId}"
 
 		git rebase "origin/${ghprbTargetBranch}"
 		if [ $? -ne 0 ] ; then
-		    echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
-		    exit 1
+			echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
+			exit 1
 		fi
 	fi
-else
-	if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
-		echo "Skipping scheduled run"
-		exit 0
-	fi
 fi
-
 
 #
 # === Phase 2 ============================================================
