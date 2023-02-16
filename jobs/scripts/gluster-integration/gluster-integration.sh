@@ -4,15 +4,12 @@
 # run the tests from https://github.com/gluster/samba-integration.git
 # and run the tests.
 
-GIT_REPO_NAME="samba-integration"
-GIT_REPO_URL="https://github.com/gluster/${GIT_REPO_NAME}.git"
-TESTS_GIT_BRANCH="tests"
+GIT_REPO_NAME="sit-environment"
+GIT_REPO_URL="https://github.com/samba-in-kubernetes/${GIT_REPO_NAME}.git"
+GIT_TARGET_REPO="${GIT_REPO}"
 CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
 TEST_EXTRA_VARS=""
 TEST_TARGET="test"
-SCRIPT_GIT_BRANCH="centos-ci"
-SCRIPT_NAME="$(basename $0)"
-SCRIPT_PATH="$(realpath $0)"
 
 # if anything fails, we'll abort
 set -e
@@ -35,26 +32,29 @@ cd tests
 git clone "${GIT_REPO_URL}"
 cd "${GIT_REPO_NAME}"
 
-# by default we clone the master branch, but maybe this was triggered through a PR?
-if [ -n "${ghprbPullId}" ]
-then
-	if [ "${ghprbTargetBranch}" = "${TESTS_GIT_BRANCH}" ]; then
-		# A PR against the tests branch:
-		# Just invoke "make test" from master with the corresponding
-		# parameters.
+if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
+	if [ -n "${ghprbPullId}" ]; then
+		# Just invoke "make test" with the corresponding parameters.
 		TEST_EXTRA_VARS="test_repo=${GIT_REPO_URL} test_repo_pr=${ghprbPullId}"
 	else
+		echo "Skipping scheduled run"
+		exit 0
+	fi
+else
+	if [ -n "${ghprbPullId}" ]; then
+		# Run sanity tests only for pull requests on sit-environment
+		TEST_EXTRA_VARS="test_sanity_only=1"
+
 		git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
 		git checkout "pr_${ghprbPullId}"
 
 		git rebase "origin/${ghprbTargetBranch}"
 		if [ $? -ne 0 ] ; then
-		    echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
-		    exit 1
+			echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
+			exit 1
 		fi
 	fi
 fi
-
 
 #
 # === Phase 2 ============================================================

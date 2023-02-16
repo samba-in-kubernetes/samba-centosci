@@ -1,15 +1,27 @@
-- job:
+- project:
     name: samba_gluster-integration
+    git_repo:
+      - 'test-cases'
+      - 'environment'
+    jobs:
+      - 'samba_gluster-integration-{git_repo}'
+
+- job-template:
+    name: 'samba_gluster-integration-{git_repo}'
     node: cico-workspace
-    description: Run integrations for clustered samba on top of GlusterFS. They are run on latest bits from Samba and Gluster.
+    description: Run integrations for clustered samba on top of GlusterFS.
     project-type: freestyle
     concurrent: true
 
     parameters:
-    - string:
-        default: '8s'
-        description: CentOS version to be installed on host node
-        name: CENTOS_VERSION
+      - string:
+          name: CENTOS_VERSION
+          default: '8s'
+          description: CentOS version to be installed on host node
+      - string:
+          name: GIT_REPO
+          default: 'sit-{git_repo}'
+          description: GitHub repository responsible for running the tests.
 
     scm:
     - git:
@@ -17,7 +29,8 @@
 
     properties:
     - github:
-        url: https://github.com/gluster/samba-integration
+        url: https://github.com/samba-in-kubernetes/sit-{git_repo}
+
     - build-discarder:
         days-to-keep: 7
         artifacts-days-to-keep: 7
@@ -30,19 +43,19 @@
         - gd
         - anoopcs9
         - spuiuk
+        - phlogistonjohn
         cron: H/5 * * * *
-        status-context: centos-ci/glusterfs/master
+        status-context: centos-ci/glusterfs/devel
         white-list-target-branches:
-        - master
-        - tests
+        - main
 
     builders:
-    - shell: !include-raw: scripts/common/get-node.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-integration/gluster-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION"
+    - shell: !include-raw-escape: scripts/common/get-node.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-integration/gluster-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION GIT_REPO=$GIT_REPO"
 
     publishers:
     - email-ext:
-        recipients: anoopcs@samba.org, gd@samba.org, sprabhu@redhat.com
+        recipients: anoopcs@samba.org, sprabhu@redhat.com
         reply-to: $DEFAULT_REPLYTO
         subject: $DEFAULT_SUBJECT
         content-type: text
@@ -52,4 +65,4 @@
         - matches:
             - log-text: Building remotely
           script:
-            !include-raw: scripts/common/return-node.sh
+            !include-raw-escape: scripts/common/return-node.sh
