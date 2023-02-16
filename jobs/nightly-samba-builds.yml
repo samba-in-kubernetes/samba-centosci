@@ -39,7 +39,7 @@
 
     properties:
     - github:
-        url: https://github.com/gluster/samba-integration
+        url: https://github.com/samba-in-kubernetes/samba-build
     - build-discarder:
         days-to-keep: 7
         artifacts-days-to-keep: 7
@@ -53,14 +53,15 @@
         - anoopcs9
         - spuiuk
         - nixpanic
+        - phlogistonjohn
         cron: H/5 * * * *
         status-context: 'centos-ci/build-rpms/{os_version}/{samba_branch}'
         white-list-target-branches:
-        - samba-build
+        - main
     - pollurl:
         cron: 'H/5 * * * *'
         urls:
-          - url: 'https://github.com/gluster/samba-integration/commit/samba-build.patch'
+          - url: 'https://github.com/samba-in-kubernetes/samba-build/commit/main.patch'
             check-content:
               - simple: true
 

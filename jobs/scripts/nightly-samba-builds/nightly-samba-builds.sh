@@ -1,7 +1,7 @@
 #!/bin/bash
 
-BUILD_GIT_REPO="https://github.com/gluster/samba-integration"
-BUILD_GIT_BRANCH="samba-build"
+BUILD_GIT_REPO="https://github.com/samba-in-kubernetes/samba-build"
+BUILD_GIT_BRANCH="main"
 SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
 SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
 CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
