@@ -20,7 +20,7 @@ spec:
   runPolicy: Serial
   source:
     git:
-      uri: https://github.com/anoopcs9/samba-centosci
+      uri: https://github.com/samba-in-kubernetes/samba-centosci
       ref: main
     contextDir: mirror
   strategy:

@@ -25,7 +25,7 @@
 
     scm:
     - git:
-        url: https://github.com/anoopcs9/samba-centosci
+        url: https://github.com/samba-in-kubernetes/samba-centosci
 
     properties:
     - github:
