@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set up a centos8 machine with the required environment to
-# run the tests from https://github.com/gluster/samba-integration.git
+# run the tests from https://github.com/samba-in-kubernetes/sit-test-cases.git
 # and run the tests.
 
 GIT_REPO_NAME="sit-environment"
