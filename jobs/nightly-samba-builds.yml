@@ -47,6 +47,7 @@
     triggers:
     - timed: "H 0 * * *"
     - github-pull-request:
+        trigger-phrase: '/(re)?test ((all)|(centos-ci/build-rpms/({os_version}/{samba_branch})?))'
         admin-list:
         - obnoxxx
         - gd
