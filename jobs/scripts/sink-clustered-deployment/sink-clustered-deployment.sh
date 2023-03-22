@@ -70,8 +70,8 @@ if [ -n "${ghprbPullId}" ]; then
 	CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-pr${ghprbPullId}"
 	# if the sha1 hash is provided, we will try to append a short form of it to
 	# the tag to make the image unique to each "push" of the PR.
-	shortsha="${sha1:0:8}"
-	if [ -n "${shortsha}" ]; then
+	if [[ "$sha1" =~ ^[abcdef0-9]{4}[abcdef0-9]*$ ]]; then
+		shortsha="${sha1:0:8}"
 		CI_IMG_TAG="${CI_IMG_TAG}-${shortsha}"
 	fi
 fi
