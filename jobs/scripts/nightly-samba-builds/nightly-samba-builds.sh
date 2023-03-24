@@ -94,16 +94,18 @@ then
 
 fi
 
-# Pre-fetch 9-stream vagrant libvirt box as it is not yet referenced from
-# app.vagrantup.com/boxes
-vagrant box add --provider libvirt --name centos/stream9 \
-	https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-9-20220808.1.x86_64.vagrant-libvirt.box
-
 if [[ "${PLATFORM}" = "fedora" ]]
 then
 	make "rpms.fedora" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
 	make "test.rpms.fedora" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
 else
+	# Pre-fetch vagrant libvirt boxes for CentOS Stream as latest versions
+	# are not yet referenced from app.vagrantup.com/boxes
+	vagrant box add --provider libvirt --name centos/stream8 \
+		https://cloud.centos.org/centos/8-stream/x86_64/images/CentOS-Stream-Vagrant-8-20230308.3.x86_64.vagrant-libvirt.box
+	vagrant box add --provider libvirt --name centos/stream9 \
+		https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-Vagrant-9-20230313.0.x86_64.vagrant-libvirt.box
+
 	make "rpms.${PLATFORM}${VERSION}" "refspec=${SAMBA_BRANCH}"
 	make "test.rpms.${PLATFORM}${VERSION}" "refspec=${SAMBA_BRANCH}"
 fi
