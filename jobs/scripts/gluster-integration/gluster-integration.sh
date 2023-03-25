@@ -93,12 +93,12 @@ systemctl start libvirtd
 # environment in case something goes wrong.
 virsh capabilities
 
-# Prefetch the centos/8 vagrant box.
-# We use the vagrant cloud rather than fetching directly from centos
-# in order to get proper version metadata & caching support.
+# Prefetch the centos/stream8 vagrant box as latest version is not yet
+# referenced from app.vagrantup.com/boxes.
 # (The echo is becuase of "set -e" and that an existing box will cause
 #  vagrant to return non-zero.)
-vagrant box add "https://vagrantcloud.com/centos/8" --provider "libvirt" \
+vagrant box add --provider libvirt --name centos/stream8 \
+	https://cloud.centos.org/centos/8-stream/x86_64/images/CentOS-Stream-Vagrant-8-20230308.3.x86_64.vagrant-libvirt.box \
 	|| echo "Warning: the vagrant box may already exist OR an error occured"
 
 #
