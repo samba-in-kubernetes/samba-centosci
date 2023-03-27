@@ -7,7 +7,7 @@
       - 'fedora37'
     samba_branch:
       - 'master'
-      - 'v4-16-test'
+      - 'v4-18-test'
       - 'v4-17-test'
     jobs:
       - 'samba_build-rpms-{os_version}-{samba_branch}'
