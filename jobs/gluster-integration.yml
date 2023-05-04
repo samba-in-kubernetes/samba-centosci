@@ -44,6 +44,7 @@
         - anoopcs9
         - spuiuk
         - phlogistonjohn
+        - xhernandez
         cron: H/5 * * * *
         status-context: centos-ci/glusterfs/devel
         white-list-target-branches:
