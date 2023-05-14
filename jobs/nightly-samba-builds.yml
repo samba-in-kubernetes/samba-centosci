@@ -3,7 +3,7 @@
     os_version:
       - 'centos8'
       - 'centos9'
-      - 'fedora36'
+      - 'fedora38'
       - 'fedora37'
     samba_branch:
       - 'master'
