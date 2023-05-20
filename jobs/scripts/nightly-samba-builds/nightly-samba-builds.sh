@@ -30,7 +30,8 @@ set -x
 # epel is needed to get more up-to-date versions of mock and ansible.
 dnf -y install epel-release epel-next-release
 dnf -y install git make rpm-build mock createrepo_c \
-	ansible-core ansible-collection-ansible-posix
+	ansible-core ansible-collection-ansible-posix \
+	ansible-collection-containers-podman podman jq
 
 # Install QEMU-KVM and Libvirt packages
 dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
