@@ -33,29 +33,6 @@ dnf -y install git make rpm-build mock createrepo_c \
 	ansible-core ansible-collection-ansible-posix \
 	ansible-collection-containers-podman podman jq
 
-# Install QEMU-KVM and Libvirt packages
-dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
-
-# "Development Tools" are needed to run "vagrant plugin install"
-dnf -y group install "Development Tools"
-
-# Use Fedora COPR maintained builds for vagrant and its dependencies
-# including libvirt plugin instead of upstream version with added
-# difficulty of rebuilding krb5 and libssh libraries.
-dnf -y copr enable pvalena/vagrant
-dnf -y install vagrant vagrant-libvirt
-
-# QEMU would require search permission inside root's home for accessing
-# libvirt specific images under /root/.local/share/libvirt/images/
-setfacl -m u:qemu:x /root/
-
-# Vagrant needs libvirtd running
-systemctl start libvirtd
-
-# Log the virsh capabilites so that we know the
-# environment in case something goes wrong.
-virsh capabilities
-
 git clone --depth=1 --branch="${BUILD_GIT_BRANCH}" "${BUILD_GIT_REPO}" "${BUILD_GIT_BRANCH}"
 cd "${BUILD_GIT_BRANCH}"
 
