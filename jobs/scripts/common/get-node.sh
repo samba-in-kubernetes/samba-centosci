@@ -13,7 +13,11 @@ client:
     key: ${CICO_API_KEY}
 EOF
 
-POOL_MATCH="^(metal-ec2)(.*)(centos-${CENTOS_VERSION}-x86_64)$"
+if [[ "${JOB_NAME}" =~ rpms ]]; then
+	POOL_MATCH="^(virt-ec2)(.*)(centos-${CENTOS_VERSION}-x86_64)$"
+else
+	POOL_MATCH="^(metal-ec2)(.*)(centos-${CENTOS_VERSION}-x86_64)$"
+fi
 
 readarray -t POOLS < <(duffy client list-pools | jq -r '.pools[].name')
 
