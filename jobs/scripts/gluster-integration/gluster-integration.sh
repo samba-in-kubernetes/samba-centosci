@@ -70,7 +70,7 @@ fi
 dnf -y install epel-release epel-next-release
 
 dnf -y install make ansible-core ansible-collection-ansible-posix \
-               ansible-collection-ansible-utils
+               ansible-collection-ansible-utils python3-netaddr
 
 # Install QEMU-KVM and Libvirt packages
 dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
