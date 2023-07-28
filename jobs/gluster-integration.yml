@@ -24,6 +24,10 @@
           name: GIT_REPO
           default: 'sit-{git_repo}'
           description: GitHub repository responsible for running the tests.
+      - string:
+          name: FILE_SYSTEM
+          default: '{file_system}'
+          description: File system to be used as backend for Samba.
 
     scm:
     - git:
@@ -55,7 +59,7 @@
 
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-integration/gluster-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION GIT_REPO=$GIT_REPO"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-integration/gluster-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION FILE_SYSTEM=$FILE_SYSTEM GIT_REPO=$GIT_REPO"
 
     publishers:
     - email-ext:
