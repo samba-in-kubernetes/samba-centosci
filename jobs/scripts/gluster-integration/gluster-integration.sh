@@ -8,6 +8,7 @@ GIT_REPO_NAME="sit-environment"
 GIT_REPO_URL="https://github.com/samba-in-kubernetes/${GIT_REPO_NAME}.git"
 GIT_TARGET_REPO="${GIT_REPO}"
 GIT_TARGET_REPO_URL="https://github.com/samba-in-kubernetes/${GIT_TARGET_REPO}.git"
+BACKEND="${FILE_SYSTEM:-glusterfs}"
 CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
 TEST_EXTRA_VARS=""
 TEST_TARGET="test"
@@ -36,12 +37,14 @@ cd "${GIT_REPO_NAME}"
 if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
 	if [ -n "${ghprbPullId}" ]; then
 		# Just invoke "make test" with the corresponding parameters.
-		TEST_EXTRA_VARS="test_repo=${GIT_TARGET_REPO_URL} test_repo_pr=${ghprbPullId}"
+		TEST_EXTRA_VARS="test_repo=${GIT_TARGET_REPO_URL} \
+					test_repo_pr=${ghprbPullId} \
+					backend=${BACKEND}"
 	fi
 else
 	if [ -n "${ghprbPullId}" ]; then
 		# Run sanity tests only for pull requests on sit-environment
-		TEST_EXTRA_VARS="test_sanity_only=1"
+		TEST_EXTRA_VARS="test_sanity_only=1 backend=${BACKEND}"
 
 		git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
 		git checkout "pr_${ghprbPullId}"
