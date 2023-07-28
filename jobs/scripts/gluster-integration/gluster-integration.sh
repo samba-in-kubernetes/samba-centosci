@@ -37,9 +37,6 @@ if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
 	if [ -n "${ghprbPullId}" ]; then
 		# Just invoke "make test" with the corresponding parameters.
 		TEST_EXTRA_VARS="test_repo=${GIT_TARGET_REPO_URL} test_repo_pr=${ghprbPullId}"
-	else
-		echo "Skipping scheduled run"
-		exit 0
 	fi
 else
 	if [ -n "${ghprbPullId}" ]; then
@@ -54,6 +51,9 @@ else
 			echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
 			exit 1
 		fi
+	else
+		echo "Skipping scheduled run"
+		exit 0
 	fi
 fi
 
