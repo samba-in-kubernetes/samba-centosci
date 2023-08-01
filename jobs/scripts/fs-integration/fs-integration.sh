@@ -79,9 +79,6 @@ dnf -y install make ansible-core ansible-collection-ansible-posix \
 # Install QEMU-KVM and Libvirt packages
 dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
 
-# "Development Tools" are needed to run "vagrant plugin install"
-dnf -y group install "Development Tools"
-
 # Use Fedora COPR maintained builds for vagrant and its dependencies
 # including libvirt plugin instead of upstream version with added
 # difficulty of rebuilding krb5 and libssh libraries.
