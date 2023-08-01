@@ -45,6 +45,7 @@
     triggers:
     - timed: "H 2 * * *"
     - github-pull-request:
+        trigger-phrase: '/(re)?test ((all)|(centos-ci/({file_system})?))'
         admin-list:
         - obnoxxx
         - gd
