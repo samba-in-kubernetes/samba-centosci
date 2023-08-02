@@ -34,17 +34,18 @@ cd tests
 git clone "${GIT_REPO_URL}"
 cd "${GIT_REPO_NAME}"
 
+TEST_EXTRA_VARS="backend=${BACKEND}"
 if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
 	if [ -n "${ghprbPullId}" ]; then
 		# Just invoke "make test" with the corresponding parameters.
-		TEST_EXTRA_VARS="test_repo=${GIT_TARGET_REPO_URL} \
-					test_repo_pr=${ghprbPullId} \
-					backend=${BACKEND}"
+		TEST_EXTRA_VARS="${TEST_EXTRA_VARS} \
+					test_repo=${GIT_TARGET_REPO_URL} \
+					test_repo_pr=${ghprbPullId}"
 	fi
 else
 	if [ -n "${ghprbPullId}" ]; then
 		# Run sanity tests only for pull requests on sit-environment
-		TEST_EXTRA_VARS="test_sanity_only=1 backend=${BACKEND}"
+		TEST_EXTRA_VARS="${TEST_EXTRA_VARS} test_sanity_only=1"
 
 		git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
 		git checkout "pr_${ghprbPullId}"
