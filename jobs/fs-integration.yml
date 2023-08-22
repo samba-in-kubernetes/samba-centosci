@@ -54,6 +54,7 @@
         - phlogistonjohn
         - xhernandez
         - synarete
+        - Shwetha-Acharya
         cron: H/5 * * * *
         status-context: centos-ci/{file_system}
         white-list-target-branches:
