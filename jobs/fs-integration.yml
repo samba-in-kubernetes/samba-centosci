@@ -6,6 +6,7 @@
     file_system:
       - 'glusterfs'
       - 'xfs'
+      - 'cephfs'
     jobs:
       - 'samba_{file_system}-integration-{git_repo}'
 
