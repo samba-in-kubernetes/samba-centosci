@@ -44,9 +44,6 @@ if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
 	fi
 else
 	if [ -n "${ghprbPullId}" ]; then
-		# Run sanity tests only for pull requests on sit-environment
-		TEST_EXTRA_VARS="${TEST_EXTRA_VARS} test_sanity_only=1"
-
 		git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
 		git checkout "pr_${ghprbPullId}"
 
@@ -55,10 +52,9 @@ else
 			echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
 			exit 1
 		fi
-	else
-		echo "Skipping scheduled run"
-		exit 0
 	fi
+
+	TEST_EXTRA_VARS="${TEST_EXTRA_VARS} test_sanity_only=1"
 fi
 
 #
