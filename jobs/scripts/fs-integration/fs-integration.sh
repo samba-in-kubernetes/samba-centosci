@@ -71,6 +71,7 @@ if [ "${CENTOS_VERSION}" -eq 8 ]; then
 		ansible-collection-ansible-utils
 	pip3.12 install netaddr
 else
+	dnf config-manager --set-enabled crb
 	dnf -y install python3-pip
 	ansible-galaxy collection install ansible.posix ansible.utils
 	pip3 install netaddr
@@ -80,9 +81,7 @@ fi
 # Install QEMU-KVM and Libvirt packages
 dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
 
-# Use Fedora COPR maintained builds for vagrant and its dependencies
-# including libvirt plugin instead of upstream version with added
-# difficulty of rebuilding krb5 and libssh libraries.
+# Use Fedora COPR maintained builds for vagrant and its dependencies.
 dnf -y copr enable pvalena/vagrant
 dnf -y install vagrant vagrant-libvirt rsync
 
