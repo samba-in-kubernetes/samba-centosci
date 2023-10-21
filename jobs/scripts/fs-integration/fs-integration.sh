@@ -22,9 +22,7 @@ set -x
 #
 # === Phase 1 ============================================================
 #
-# Install git, fetch the git repo and possibly restart updated script if
-# we are detecting that we are running on a PR that changes this script.
-#
+# Install git and fetch the git repo.
 
 dnf -y install git
 
@@ -63,7 +61,6 @@ fi
 # Prepare the system:
 # - install packages
 # - start libvirt
-# - prefetch vm image
 #
 
 # enable additional sources for dnf:
@@ -98,6 +95,16 @@ virsh capabilities
 # run the tests
 #
 
-EXTRA_VARS="${TEST_EXTRA_VARS}" make "${TEST_TARGET}"
+set +x
 
+EXTRA_VARS="${TEST_EXTRA_VARS}" make "${TEST_TARGET}"
+ret=$?
+
+EXTRA_VARS="${TEST_EXTRA_VARS}" make statedump
+
+pushd /tmp
+tar -zcvf "sit.${BACKEND}_statedump.tar.gz" "sit.${BACKEND}_statedump"
+popd
+
+exit $ret
 # END
