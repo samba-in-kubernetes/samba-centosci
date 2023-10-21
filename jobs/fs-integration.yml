@@ -78,4 +78,8 @@
         - matches:
             - log-text: Building remotely
           script:
-            !include-raw-escape: scripts/common/return-node.sh
+            !include-raw-escape:
+              - scripts/fs-integration/copy.sh
+              - scripts/common/return-node.sh
+    - archive:
+        artifacts: '*.tar.gz'
