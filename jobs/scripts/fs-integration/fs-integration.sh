@@ -95,7 +95,7 @@ virsh capabilities
 # run the tests
 #
 
-set +x
+set +e
 
 EXTRA_VARS="${TEST_EXTRA_VARS}" make "${TEST_TARGET}"
 ret=$?
