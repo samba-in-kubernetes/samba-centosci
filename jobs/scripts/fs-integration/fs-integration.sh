@@ -63,12 +63,19 @@ fi
 # enable additional sources for dnf:
 dnf -y install epel-release epel-next-release
 
-dnf -y install make ansible-core ansible-collection-ansible-posix \
-               ansible-collection-ansible-utils
+dnf -y install make ansible-core
 
-# Install python modules using pip for ansible built with python 3.12
-dnf -y install python3.12-pip
-pip3.12 install netaddr
+if [ "${CENTOS_VERSION}" -eq 8 ]; then
+	dnf -y install python3.12-pip
+	dnf -y install ansible-collection-ansible-posix \
+		ansible-collection-ansible-utils
+	pip3.12 install netaddr
+else
+	dnf -y install python3-pip
+	ansible-galaxy collection install ansible.posix ansible.utils
+	pip3 install netaddr
+fi
+
 
 # Install QEMU-KVM and Libvirt packages
 dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
