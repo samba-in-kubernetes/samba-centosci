@@ -48,6 +48,11 @@
     - timed: "H 2 * * *"
     - github-pull-request:
         trigger-phrase: '/(re)?test ((all)|(centos-ci/({file_system})?))'
+        white-list-labels:
+        - !j2: |
+            {% if (git_repo == 'test-cases') and (file_system == 'glusterfs') -%}
+              centos-ci/glusterfs
+            {%- endif %}
         admin-list:
         - obnoxxx
         - gd
