@@ -46,20 +46,22 @@
         days-to-keep: 7
         artifacts-days-to-keep: 7
 
-    triggers:
-    - timed: "H 2 * * *"
-    - github-pull-request:
-        trigger-phrase: '/(re)?test ((all)|(centos-ci/sink-clustered/mini-k8s-({k8s_version})?))'
-        admin-list:
-          - obnoxxx
-          - phlogistonjohn
-          - gd
-          - spuiuk
-          - raghavendra-talur
-          - synarete
-          - anoopcs9
-        cron: H/5 * * * *
-        status-context: 'centos-ci/sink-clustered/mini-k8s-{k8s_version}'
+    triggers: !j2-yaml: |
+      {% if k8s_version == 'latest' %}
+        - github-pull-request:
+            trigger-phrase: '/(re)?test ((all)|(centos-ci/sink-clustered/mini-k8s-(latest)?))'
+            admin-list:
+              - obnoxxx
+              - phlogistonjohn
+              - gd
+              - spuiuk
+              - raghavendra-talur
+              - synarete
+              - anoopcs9
+            cron: H/5 * * * *
+            status-context: 'centos-ci/sink-clustered/mini-k8s-{k8s_version}'
+      {% endif %}
+        - timed: "H 2 * * *"
 
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
