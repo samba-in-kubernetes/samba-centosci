@@ -4,7 +4,7 @@
       - 'centos8'
       - 'centos9'
       - 'fedora38'
-      - 'fedora37'
+      - 'fedora39'
     samba_branch:
       - 'master'
       - 'v4-18-test'
