@@ -103,6 +103,7 @@ ret=$?
 EXTRA_VARS="${TEST_EXTRA_VARS}" make statedump
 
 pushd /tmp
+find "sit.${BACKEND}_statedump" -name test.out -exec cp {} . \;
 tar -zcvf "sit.${BACKEND}_statedump.tar.gz" "sit.${BACKEND}_statedump"
 popd
 
