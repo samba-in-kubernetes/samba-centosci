@@ -87,4 +87,4 @@
               - scripts/fs-integration/copy.sh
               - scripts/common/return-node.sh
     - archive:
-        artifacts: '*.tar.gz'
+        artifacts: 'test.out, *.tar.gz'
