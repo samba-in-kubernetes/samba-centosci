@@ -32,6 +32,13 @@
           default: '{file_system}'
           description: File system to be used as backend for Samba.
 
+    wrappers:
+      - credentials-binding:
+        - amazon-web-services:
+            credential-id: aws-s3-credentials
+            access-key: S3_ACCESS_KEY
+            secret-key: S3_SECRET_KEY
+
     scm:
     - git:
         url: https://github.com/samba-in-kubernetes/samba-centosci
@@ -71,7 +78,7 @@
     - shell: !include-raw-escape: scripts/common/get-node.sh
     - shell: |
         #!/bin/bash
-        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/fs-integration/fs-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION FILE_SYSTEM=$FILE_SYSTEM GIT_REPO=$GIT_REPO"
+        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/fs-integration/fs-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION FILE_SYSTEM=$FILE_SYSTEM GIT_REPO=$GIT_REPO S3_ACCESS_KEY=$S3_ACCESS_KEY S3_SECRET_KEY=$S3_SECRET_KEY"
 
     publishers:
     - email-ext:
