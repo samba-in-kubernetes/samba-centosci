@@ -96,6 +96,32 @@ systemctl start libvirtd
 # environment in case something goes wrong.
 virsh capabilities
 
+if [ "${BACKEND}" = "gpfs" ]; then
+	pushd /tmp
+
+	dnf -y install unzip
+	# Download and install latest AWS cli
+	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+	unzip -q awscliv2.zip
+	aws/install
+
+	# Configure AWS credentials
+	aws configure set aws_access_key_id "${S3_ACCESS_KEY}"
+	aws configure set aws_secret_access_key "${S3_SECRET_KEY}"
+
+	# Download and install developer edition of Storage Scale
+	aws s3api get-object --bucket centos-ci --key "version_to_use.txt" "version.txt"
+	aws s3api get-object --bucket centos-ci --key "$(< version.txt)" "$(< version.txt)"
+
+	# Export the downloaded location of install zip file
+	STORAGE_SCALE_DEV_ZIP="$(readlink -f -- $(< version.txt))"
+	export STORAGE_SCALE_DEV_ZIP
+
+	unset S3_ACCESS_KEY S3_SECRET_KEY
+
+	popd
+fi
+
 #
 # === Phase 3 ============================================================
 #
