@@ -69,7 +69,9 @@
 
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/fs-integration/fs-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION FILE_SYSTEM=$FILE_SYSTEM GIT_REPO=$GIT_REPO"
+    - shell: |
+        #!/bin/bash
+        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/fs-integration/fs-integration.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION FILE_SYSTEM=$FILE_SYSTEM GIT_REPO=$GIT_REPO"
 
     publishers:
     - email-ext:
