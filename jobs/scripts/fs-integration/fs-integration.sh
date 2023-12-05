@@ -16,9 +16,6 @@ TEST_TARGET="test"
 # if anything fails, we'll abort
 set -e
 
-# TODO: disable debugging
-set -x
-
 #
 # === Phase 1 ============================================================
 #
