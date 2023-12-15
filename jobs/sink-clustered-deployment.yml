@@ -1,7 +1,7 @@
 - project:
     name: samba_sink_mini_k8s
     k8s_version:
-      - '1.26'
+      - '1.28'
       - '1.27'
       - 'latest'
     jobs:
