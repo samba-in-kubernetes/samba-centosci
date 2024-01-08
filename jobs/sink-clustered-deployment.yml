@@ -67,7 +67,7 @@
     - shell: !include-raw-escape: scripts/common/get-node.sh
     - shell: |
         #!/bin/bash
-        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/sink-clustered-deployment/sink-clustered-deployment.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch sha1=$ghprbActualCommit IMG_REGISTRY_AUTH_USR=$IMG_REGISTRY_AUTH_USR IMG_REGISTRY_AUTH_PASSWD=$IMG_REGISTRY_AUTH_PASSWD KUBE_VERSION=$KUBE_VERSION ROOK_VERSION=$ROOK_VERSION"
+        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/sink-clustered-deployment/sink-clustered-deployment.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch sha1=$ghprbActualCommit CENTOS_VERSION=$CENTOS_VERSION IMG_REGISTRY_AUTH_USR=$IMG_REGISTRY_AUTH_USR IMG_REGISTRY_AUTH_PASSWD=$IMG_REGISTRY_AUTH_PASSWD KUBE_VERSION=$KUBE_VERSION ROOK_VERSION=$ROOK_VERSION"
 
     publishers:
     - email-ext:
