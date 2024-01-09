@@ -17,7 +17,7 @@
     parameters:
       - string:
           name: CENTOS_VERSION
-          default: '8s'
+          default: '9s'
           description: CentOS version to be installed on host node
       - string:
           name: KUBE_VERSION
