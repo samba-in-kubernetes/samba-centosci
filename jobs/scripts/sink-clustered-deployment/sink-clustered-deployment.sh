@@ -3,6 +3,7 @@
 SINK_OPERATOR_GIT_REPO="https://github.com/samba-in-kubernetes/samba-operator"
 SINK_OPERATOR_GIT_BRANCH=${SINK_OPERATOR_GIT_BRANCH:-"master"}
 
+CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
 KUBE_VERSION=${KUBE_VERSION:-"latest"}
 CONTAINER_CMD=${CONTAINER_CMD:-"podman"}
 
@@ -11,6 +12,10 @@ CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-run"
 
 # Exit immediately if a command exits with non-zero status
 set -e
+
+if [ "${CENTOS_VERSION}" -eq 9 ]; then
+	dnf config-manager --set-enabled crb
+fi
 
 dnf -y install git podman skopeo
 
