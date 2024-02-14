@@ -64,7 +64,11 @@ fi
 dnf -y install epel-release epel-next-release
 
 dnf -y install make ansible-core ansible-collection-ansible-posix \
-               ansible-collection-ansible-utils python3.11-netaddr
+               ansible-collection-ansible-utils
+
+# Install python modules using pip for ansible built with python 3.12
+dnf -y install python3.12-pip
+pip3.12 install netaddr
 
 # Install QEMU-KVM and Libvirt packages
 dnf -y install qemu-kvm qemu-img libvirt libvirt-devel
