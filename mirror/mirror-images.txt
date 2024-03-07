@@ -8,4 +8,4 @@
 
 # sink clustered testing
 docker.io/kindest/kindnetd:v20221004-44d545d1	kindest/kindnetd:v20221004-44d545d1
-docker.io/golang:1.20				golang:1.20
+docker.io/golang:1.21				golang:1.21
