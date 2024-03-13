@@ -96,7 +96,7 @@ systemctl start libvirtd
 # environment in case something goes wrong.
 virsh capabilities
 
-if [ "${BACKEND}" = "gpfs" ]; then
+if [[ "${BACKEND}" =~ "gpfs" ]]; then
 	pushd /tmp
 
 	dnf -y install unzip

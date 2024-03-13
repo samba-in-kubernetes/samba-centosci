@@ -9,6 +9,7 @@
       - 'cephfs'
       - 'cephfs.vfs'
       - 'gpfs'
+      - 'gpfs.vfs'
     jobs:
       - 'samba_{file_system}-integration-{git_repo}'
 
