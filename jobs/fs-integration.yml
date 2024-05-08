@@ -54,28 +54,30 @@
         days-to-keep: 7
         artifacts-days-to-keep: 7
 
-    triggers:
-    - timed: "H 2 * * *"
-    - github-pull-request:
-        trigger-phrase: '/(re)?test ((all)|(centos-ci/({file_system})?))'
-        white-list-labels:
-        - !j2: |
-            {% if (git_repo == 'test-cases') and (file_system == 'glusterfs') -%}
-              centos-ci/glusterfs
-            {%- endif %}
-        admin-list:
-        - obnoxxx
-        - gd
-        - anoopcs9
-        - spuiuk
-        - phlogistonjohn
-        - xhernandez
-        - synarete
-        - Shwetha-Acharya
-        cron: H/5 * * * *
-        status-context: centos-ci/{file_system}
-        white-list-target-branches:
-        - main
+    triggers: !j2-yaml: |
+      {% if not ((git_repo == 'test-cases') and (file_system == 'glusterfs')) %}
+        - timed: "H 2 * * *"
+      {% endif %}
+        - github-pull-request:
+            trigger-phrase: '/(re)?test ((all)|(centos-ci/({file_system})?))'
+            white-list-labels:
+            - !j2: |
+                {% if (git_repo == 'test-cases') and (file_system == 'glusterfs') -%}
+                  centos-ci/glusterfs
+                {%- endif %}
+            admin-list:
+            - obnoxxx
+            - gd
+            - anoopcs9
+            - spuiuk
+            - phlogistonjohn
+            - xhernandez
+            - synarete
+            - Shwetha-Acharya
+            cron: H/5 * * * *
+            status-context: centos-ci/{file_system}
+            white-list-target-branches:
+            - main
 
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
