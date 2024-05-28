@@ -45,8 +45,6 @@
           ci-skip: false
           add-note-merge-request: false
           add-vote-merge-request: false
-          merge-request-label-filter-config:
-            include: ci/{file_system}
 
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
