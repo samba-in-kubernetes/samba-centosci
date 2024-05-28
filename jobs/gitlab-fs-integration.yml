@@ -60,8 +60,6 @@
         content-type: text
         body: $DEFAULT_CONTENT
         attach-build-log: true
-    - gitlab-notifier:
-        name: ci/{file_system}
     - post-tasks:
         - matches:
             - log-text: Building remotely
@@ -71,3 +69,5 @@
               - scripts/common/return-node.sh
     - archive:
         artifacts: 'test.out, *.tar.gz'
+    - gitlab-notifier:
+        name: ci/{file_system}
