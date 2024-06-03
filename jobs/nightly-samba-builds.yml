@@ -1,7 +1,6 @@
 - project:
     name: samba_nightly-rpm-builds
     os_version:
-      - 'centos8'
       - 'centos9'
       - 'fedora40'
       - 'fedora39'
