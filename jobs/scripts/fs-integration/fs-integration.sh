@@ -122,6 +122,11 @@ if [[ "${BACKEND}" =~ "gpfs" ]]; then
 	popd
 fi
 
+if  [[ "${BACKEND}" =~ "cephfs" ]]; then
+	# Download and install samba-vfs-cephfs for vfs_ceph_snapshots
+	dnf -y install samba-vfs-cephfs
+fi
+
 #
 # === Phase 3 ============================================================
 #
