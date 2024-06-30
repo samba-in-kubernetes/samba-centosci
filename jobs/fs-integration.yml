@@ -87,7 +87,8 @@
 
     publishers:
     - email-ext:
-        recipients: anoopcs@samba.org, sprabhu@redhat.com
+        recipients: !j2: |
+          {{ 'anoopcs@samba.org, sprabhu@redhat.com' if git_repo == 'test-cases' else 'anoopcs@samba.org' }}
         reply-to: $DEFAULT_REPLYTO
         subject: $DEFAULT_SUBJECT
         content-type: text

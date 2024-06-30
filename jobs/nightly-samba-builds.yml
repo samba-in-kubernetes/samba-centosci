@@ -74,7 +74,7 @@
 
     publishers:
     - email-ext:
-        recipients: anoopcs@samba.org, gd@samba.org
+        recipients: anoopcs@samba.org
         reply-to: $DEFAULT_REPLYTO
         subject: $DEFAULT_SUBJECT
         content-type: text
