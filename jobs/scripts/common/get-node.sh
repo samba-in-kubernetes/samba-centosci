@@ -1,8 +1,6 @@
 #!/bin/bash
 # A script that reserve nodes from pool
 
-set +x
-
 mkdir -p ~/.config
 
 cat > ~/.config/duffy <<EOF
