@@ -72,14 +72,8 @@ then
 
 fi
 
-if [[ "${PLATFORM}" = "fedora" ]]
-then
-	make "rpms.fedora" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
-	make "test.rpms.fedora" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
-else
-	make "rpms.${PLATFORM}${VERSION}" "refspec=${SAMBA_BRANCH}"
-	make "test.rpms.${PLATFORM}${VERSION}" "refspec=${SAMBA_BRANCH}"
-fi
+make "rpms.${PLATFORM}" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
+make "test.rpms.${PLATFORM}" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
 
 # Don't upload the artifacts if running on a PR.
 if [ -n "${ghprbPullId}" ]
