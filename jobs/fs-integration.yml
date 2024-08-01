@@ -8,6 +8,7 @@
       - 'xfs'
       - 'cephfs'
       - 'cephfs.vfs'
+      - 'cephfs.mgr.vfs'
       - 'gpfs'
       - 'gpfs.vfs'
       - 'gpfs.scale'
