@@ -7,7 +7,7 @@
       - 'glusterfs'
       - 'xfs'
       - 'cephfs'
-      - 'cephfs.mgr.vfs'
+      - 'cephfs.mgr'
       - 'gpfs'
       - 'gpfs.scale'
     jobs:
