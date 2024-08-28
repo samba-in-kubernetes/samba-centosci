@@ -2,7 +2,7 @@
     name: samba_gitlab-fs-integration
     file_system:
       - 'cephfs'
-      - 'cephfs.mgr.vfs'
+      - 'cephfs.mgr'
     jobs:
       - 'samba_gitlab-{file_system}-integration'
 
