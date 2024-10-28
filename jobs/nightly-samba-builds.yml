@@ -6,6 +6,7 @@
       - 'fedora39'
     os_arch:
       - 'x86_64'
+      - 'aarch64'
     samba_branch:
       - 'master'
       - 'v4-20-test'
