@@ -4,7 +4,6 @@ BUILD_GIT_REPO="https://github.com/samba-in-kubernetes/samba-build"
 BUILD_GIT_BRANCH="main"
 SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
 SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
-CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
 PLATFORM="${OS_VERSION//[0-9]}"
 VERSION="${OS_VERSION//[a-zA-Z]}"
 CENTOS_ARCH='x86_64'
