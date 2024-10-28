@@ -6,9 +6,9 @@ SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
 SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
 PLATFORM="${OS_VERSION//[0-9]}"
 VERSION="${OS_VERSION//[a-zA-Z]}"
-CENTOS_ARCH='x86_64'
+ARCH=${OS_ARCH:-x86_64}
 RESULT_BASE="/tmp/samba-build/rpms"
-RESULT_DIR="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${PLATFORM}/${VERSION}/${CENTOS_ARCH}"
+RESULT_DIR="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${PLATFORM}/${VERSION}/${ARCH}"
 REPO_NAME="samba-nightly-${SAMBA_MAJOR_VERS}"
 REPO_FILE="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${PLATFORM}/${REPO_NAME}.repo"
 
@@ -71,8 +71,8 @@ then
 
 fi
 
-make "rpms.${PLATFORM}" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
-make "test.rpms.${PLATFORM}" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
+make "rpms.${PLATFORM}" "vers=${VERSION}" "arch=${ARCH}" "refspec=${SAMBA_BRANCH}"
+make "test.rpms.${PLATFORM}" "vers=${VERSION}" "arch=${ARCH}" "refspec=${SAMBA_BRANCH}"
 
 # Don't upload the artifacts if running on a PR.
 if [ -n "${ghprbPullId}" ]
