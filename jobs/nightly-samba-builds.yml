@@ -70,7 +70,7 @@
     - shell: !include-raw-escape: scripts/common/scp.sh
     - shell: |
         #!/bin/bash
-        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION OS_VERSION=$OS_VERSION SAMBA_BRANCH=$SAMBA_BRANCH"
+        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch OS_VERSION=$OS_VERSION SAMBA_BRANCH=$SAMBA_BRANCH"
 
     publishers:
     - email-ext:
