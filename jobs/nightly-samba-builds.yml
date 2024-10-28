@@ -4,15 +4,17 @@
       - 'centos9'
       - 'fedora40'
       - 'fedora39'
+    os_arch:
+      - 'x86_64'
     samba_branch:
       - 'master'
       - 'v4-20-test'
       - 'v4-21-test'
     jobs:
-      - 'samba_build-rpms-{os_version}-{samba_branch}'
+      - 'samba_build-rpms-{os_version}-{samba_branch}-{os_arch}'
 
 - job-template:
-    name: 'samba_build-rpms-{os_version}-{samba_branch}'
+    name: 'samba_build-rpms-{os_version}-{samba_branch}-{os_arch}'
     node: cico-workspace
     description: Build Samba RPMs.
     project-type: freestyle
@@ -27,6 +29,10 @@
           name: OS_VERSION
           default: '{os_version}'
           description: Platform to build the RPMS
+      - string:
+          name: CENTOS_ARCH
+          default: '{os_arch}'
+          description: Architecture to build the RPMS
       - string:
           name: SAMBA_BRANCH
           default: '{samba_branch}'
@@ -46,7 +52,7 @@
     triggers:
     - timed: "H 0 * * *"
     - github-pull-request:
-        trigger-phrase: '/(re)?test ((all)|(centos-ci/build-rpms/({os_version}/{samba_branch})?))'
+        trigger-phrase: '/(re)?test ((all)|(centos-ci/build-rpms/({os_version}/{samba_branch}/{os_arch})?))'
         admin-list:
         - obnoxxx
         - gd
@@ -55,7 +61,7 @@
         - nixpanic
         - phlogistonjohn
         cron: H/5 * * * *
-        status-context: 'centos-ci/build-rpms/{os_version}/{samba_branch}'
+        status-context: 'centos-ci/build-rpms/{os_version}/{samba_branch}/{os_arch}'
         white-list-target-branches:
         - main
     - pollurl:
@@ -70,7 +76,7 @@
     - shell: !include-raw-escape: scripts/common/scp.sh
     - shell: |
         #!/bin/bash
-        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch OS_VERSION=$OS_VERSION SAMBA_BRANCH=$SAMBA_BRANCH"
+        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch OS_VERSION=$OS_VERSION OS_ARCH=$CENTOS_ARCH SAMBA_BRANCH=$SAMBA_BRANCH"
 
     publishers:
     - email-ext:
