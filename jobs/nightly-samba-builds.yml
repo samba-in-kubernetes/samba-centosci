@@ -31,7 +31,7 @@
           default: '{os_version}'
           description: Platform to build the RPMS
       - string:
-          name: CENTOS_ARCH
+          name: OS_ARCH
           default: '{os_arch}'
           description: Architecture to build the RPMS
       - string:
@@ -77,7 +77,7 @@
     - shell: !include-raw-escape: scripts/common/scp.sh
     - shell: |
         #!/bin/bash
-        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch OS_VERSION=$OS_VERSION OS_ARCH=$CENTOS_ARCH SAMBA_BRANCH=$SAMBA_BRANCH"
+        jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch OS_VERSION=$OS_VERSION OS_ARCH=$OS_ARCH SAMBA_BRANCH=$SAMBA_BRANCH"
 
     publishers:
     - email-ext:

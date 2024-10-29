@@ -12,9 +12,9 @@ client:
 EOF
 
 if [[ "${JOB_NAME}" =~ rpms ]]; then
-	POOL_MATCH="^(virt-ec2)(.*)(centos-${CENTOS_VERSION}-${CENTOS_ARCH})$"
+	POOL_MATCH="^(virt-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
 else
-	POOL_MATCH="^(metal-ec2)(.*)(centos-${CENTOS_VERSION}-${CENTOS_ARCH})$"
+	POOL_MATCH="^(metal-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
 fi
 
 readarray -t POOLS < <(duffy client list-pools | jq -r '.pools[].name')
