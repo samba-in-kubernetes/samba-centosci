@@ -20,6 +20,10 @@
           default: '9s'
           description: CentOS version to be installed on host node
       - string:
+          name: OS_ARCH
+          default: 'x86_64'
+          description: Architecture to build the RPMS
+      - string:
           name: KUBE_VERSION
           default: '{k8s_version}'
           description: Kubernetes version to be used inside minikube cluster

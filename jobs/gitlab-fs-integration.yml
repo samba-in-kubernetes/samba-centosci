@@ -19,6 +19,10 @@
           default: '9s'
           description: CentOS version to be installed on host node
       - string:
+          name: OS_ARCH
+          default: 'x86_64'
+          description: Architecture to build the RPMS
+      - string:
           name: FILE_SYSTEM
           default: '{file_system}'
           description: File system to be used as backend for Samba.
