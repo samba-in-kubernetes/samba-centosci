@@ -3,7 +3,7 @@
     os_version:
       - 'centos9'
       - 'fedora40'
-      - 'fedora39'
+      - 'fedora41'
     os_arch:
       - 'x86_64'
       - 'aarch64'
