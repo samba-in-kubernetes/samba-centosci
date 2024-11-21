@@ -1,14 +1,20 @@
 - project:
     name: samba_nightly-containers
     os_name:
+      - 'centos'
       - 'fedora'
     os_arch:
       - 'aarch64'
+      - 'x86_64'
     kind:
       - 'server'
     package_source:
       - 'default'
+      - 'devbuilds'
       - 'nightly'
+    exclude:
+      - os_name: 'fedora'
+        package_source: 'devbuilds'
     jobs:
       - 'samba_build-containers-{kind}-{package_source}-{os_name}-{os_arch}'
 
