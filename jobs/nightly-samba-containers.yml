@@ -1,14 +1,25 @@
 - project:
     name: samba_nightly-containers
     os_name:
+      - 'centos'
       - 'fedora'
     os_arch:
       - 'aarch64'
+      - 'x86_64'
     kind:
       - 'server'
     package_source:
       - 'default'
+      - 'devbuilds'
       - 'nightly'
+    exclude:
+      # ceph development rpm builds are not available for fedora
+      - os_name: 'fedora'
+        package_source: 'devbuilds'
+      # resilient storage providing ctdb on centos is not available for aarch64
+      - os_name: 'centos'
+        os_arch: 'aarch64'
+        package_source: 'default'
     jobs:
       - 'samba_build-containers-{kind}-{package_source}-{os_name}-{os_arch}'
 
