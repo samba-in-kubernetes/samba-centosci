@@ -11,7 +11,7 @@ client:
     key: ${CICO_API_KEY}
 EOF
 
-if [[ "${JOB_NAME}" =~ rpms ]]; then
+if [[ "${JOB_NAME}" =~ rpms|containers ]]; then
 	POOL_MATCH="^(virt-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
 else
 	POOL_MATCH="^(metal-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
