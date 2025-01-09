@@ -75,7 +75,7 @@
     - pollurl:
         cron: 'H/5 * * * *'
         urls:
-          - url: 'https://github.com/samba-in-kubernetes/samba-container/commit/main.patch'
+          - url: 'https://github.com/samba-in-kubernetes/samba-container/commit/master.patch'
             check-content:
               - simple: true
 
