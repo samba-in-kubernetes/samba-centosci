@@ -56,6 +56,9 @@ systemctl start libvirtd
 
 set +e
 
+# https://bugzilla.redhat.com/show_bug.cgi?id=2337302
+export VAGRANT_SERVER_URL="https://vagrantcloud.com/api/v2/vagrant"
+
 EXTRA_VARS="${TEST_EXTRA_VARS}" make "${TEST_TARGET}"
 ret=$?
 
