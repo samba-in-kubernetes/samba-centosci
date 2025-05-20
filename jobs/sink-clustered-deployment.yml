@@ -29,7 +29,7 @@
           description: Kubernetes version to be used inside minikube cluster
       - string:
           name: ROOK_VERSION
-          default: '1.16'
+          default: '1.17'
           description: Rook version to be deployed inside k8s cluster
 
     wrappers:
