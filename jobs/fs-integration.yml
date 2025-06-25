@@ -91,7 +91,13 @@
     publishers:
     - email-ext:
         recipients: !j2: |
-          {{ 'anoopcs@samba.org, sprabhu@redhat.com' if git_repo == 'test-cases' else 'anoopcs@samba.org' }}
+            anoopcs@samba.org,
+            {%- if (file_system == 'cephfs') or (file_system == 'gpfs') or (file_system == 'cephfs.mgr') or (file_system == 'gpfs.scale') -%}
+              vivek.das@ibm.com,mohit.bisht@ibm.com,aditya.roshan.ramteke@ibm.com,anushree.hallur@ibm.com,
+            {%- endif -%}
+            {%- if (git_repo == 'test-cases') -%}
+              sprabhu@redhat.com,
+            {%- endif %}
         reply-to: $DEFAULT_REPLYTO
         subject: $DEFAULT_SUBJECT
         content-type: text
