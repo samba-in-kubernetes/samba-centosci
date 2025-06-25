@@ -58,7 +58,7 @@
         artifacts-days-to-keep: 7
 
     triggers: !j2-yaml: |
-      {% if not ((git_repo == 'test-cases') and (file_system == 'glusterfs')) %}
+      {% if not (file_system == 'glusterfs') %}
         - timed: "H 2 * * *"
       {% endif %}
         - github-pull-request:
