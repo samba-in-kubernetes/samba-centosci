@@ -44,6 +44,12 @@
             credential-id: aws-s3-credentials
             access-key: S3_ACCESS_KEY
             secret-key: S3_SECRET_KEY
+        - text:
+            credential-id: ceph-smb-recipients
+            variable: CEPH_SMB_RECIPIENTS
+        - text:
+            credential-id: scale-smb-recipients
+            variable: SCALE_SMB_RECIPIENTS
 
     scm:
     - git:
@@ -92,8 +98,11 @@
     - email-ext:
         recipients: !j2: |
             anoopcs@samba.org,
-            {%- if (file_system == 'cephfs') or (file_system == 'gpfs') or (file_system == 'cephfs.mgr') or (file_system == 'gpfs.scale') -%}
-              vivek.das@ibm.com,mohit.bisht@ibm.com,aditya.roshan.ramteke@ibm.com,anushree.hallur@ibm.com,
+            {%- if (file_system == 'cephfs') or (file_system == 'cephfs.mgr') -%}
+              $CEPH_SMB_RECIPIENTS,
+            {%- endif -%}
+            {%- if (file_system == 'gpfs') or (file_system == 'gpfs.scale') -%}
+              $CEPH_SMB_RECIPIENTS,$SCALE_SMB_RECIPIENTS,
             {%- endif -%}
             {%- if (git_repo == 'test-cases') -%}
               sprabhu@redhat.com,
