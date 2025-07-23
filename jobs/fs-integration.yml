@@ -71,7 +71,7 @@
             trigger-phrase: '/(re)?test ((all)|(centos-ci/({file_system})?))'
             white-list-labels:
             - !j2: |
-                {% if (git_repo == 'test-cases') and (file_system == 'glusterfs') -%}
+                {% if file_system == 'glusterfs' -%}
                   centos-ci/glusterfs
                 {%- endif %}
             admin-list:
