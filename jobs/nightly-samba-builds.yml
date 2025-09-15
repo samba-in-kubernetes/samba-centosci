@@ -10,7 +10,7 @@
     samba_branch:
       - 'master'
       - 'v4-22-test'
-      - 'v4-21-test'
+      - 'v4-23-test'
     jobs:
       - 'samba_build-rpms-{os_version}-{samba_branch}-{os_arch}'
 
