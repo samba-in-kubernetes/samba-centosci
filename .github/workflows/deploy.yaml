@@ -9,7 +9,7 @@ jobs:
     name: Deploy Jenkins jobs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
       - name: build JJB container image
         run: docker build -t samba-centosci -f deploy/Dockerfile .
       - name: update Jenkins Jobs
