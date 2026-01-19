@@ -4,7 +4,7 @@
       - 'centos9'
       - 'centos10'
       - 'fedora42'
-      - 'fedora41'
+      - 'fedora43'
     os_arch:
       - 'x86_64'
       - 'aarch64'
