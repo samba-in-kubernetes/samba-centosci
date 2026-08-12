@@ -1,0 +1,21 @@
+- job:
+    name: samba_build-rpms-pipeline
+    project-type: pipeline
+    description: Build Samba RPMs (Pipeline with matrix).
+    concurrent: true
+
+    properties:
+      - github:
+          url: https://github.com/samba-in-kubernetes/samba-build
+      - build-discarder:
+          days-to-keep: 7
+          artifacts-days-to-keep: 7
+
+    pipeline-scm:
+      scm:
+        - git:
+            url: https://github.com/samba-in-kubernetes/samba-centosci.git
+            branches:
+              - '*/main'
+      script-path: jobs/pipelines/build-rpms.Jenkinsfile
+      lightweight-checkout: true
