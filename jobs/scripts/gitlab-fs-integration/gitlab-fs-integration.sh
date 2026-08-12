@@ -4,6 +4,8 @@
 # run the tests from https://github.com/samba-in-kubernetes/sit-test-cases.git
 # and run the tests.
 
+MERGE_REQUEST_IID="${MERGE_REQUEST_IID:-${gitlabMergeRequestIid}}"
+TARGET_REPO_HTTP_URL="${TARGET_REPO_HTTP_URL:-${gitlabTargetRepoHttpUrl}}"
 BACKEND="${FILE_SYSTEM:-cephfs}"
 CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
 TEST_EXTRA_VARS=""
@@ -23,8 +25,8 @@ cat << EOF > local.yml
 install:
   samba:
     git:
-      repo: ${gitlabTargetRepoHttpUrl}
-      mr: ${gitlabMergeRequestIid}
+      repo: ${TARGET_REPO_HTTP_URL}
+      mr: ${MERGE_REQUEST_IID}
 EOF
 
 TEST_EXTRA_VARS="backend=${BACKEND}"
