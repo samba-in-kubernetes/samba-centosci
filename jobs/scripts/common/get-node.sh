@@ -11,7 +11,11 @@ client:
     key: ${CICO_API_KEY}
 EOF
 
-if [[ "${JOB_NAME}" =~ rpms|containers ]]; then
+if [ "${DUFFY_POOL_TYPE}" = "virt" ]; then
+	POOL_MATCH="^(virt-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
+elif [ "${DUFFY_POOL_TYPE}" = "metal" ]; then
+	POOL_MATCH="^(metal-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
+elif [[ "${JOB_NAME}" =~ rpms|containers ]]; then
 	POOL_MATCH="^(virt-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
 else
 	POOL_MATCH="^(metal-ec2)(.*)(centos-${CENTOS_VERSION}-${OS_ARCH})$"
