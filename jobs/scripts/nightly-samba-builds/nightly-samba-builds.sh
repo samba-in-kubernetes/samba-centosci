@@ -1,7 +1,9 @@
 #!/bin/bash
 
-BUILD_GIT_REPO="https://github.com/samba-in-kubernetes/samba-build"
-BUILD_GIT_BRANCH="main"
+BUILD_GIT_REPO="${BUILD_GIT_REPO:-https://github.com/samba-in-kubernetes/samba-build}"
+BUILD_GIT_BRANCH="${BUILD_GIT_BRANCH:-main}"
+PULL_REQUEST_ID="${PULL_REQUEST_ID:-${ghprbPullId}}"
+TARGET_BRANCH="${TARGET_BRANCH:-${ghprbTargetBranch:-main}}"
 SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
 SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
 PLATFORM="${OS_VERSION//[0-9]}"
@@ -37,23 +39,23 @@ cd "${BUILD_GIT_BRANCH}"
 
 # By default, we clone the branch ${BUILD_GIT_BRANCH},
 # but maybe this was triggered through a PR?
-if [ -n "${ghprbPullId}" ]
+if [ -n "${PULL_REQUEST_ID}" ]
 then
 	# We have to fetch the whole target branch to be able to rebase.
 	git fetch --unshallow  origin
 
-	git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
-	git checkout "pr_${ghprbPullId}"
+	git fetch origin "pull/${PULL_REQUEST_ID}/head:pr_${PULL_REQUEST_ID}"
+	git checkout "pr_${PULL_REQUEST_ID}"
 
-	git rebase "origin/${ghprbTargetBranch}"
+	git rebase "origin/${TARGET_BRANCH}"
 	if [ $? -ne 0 ] ; then
-		echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
+		echo "Unable to automatically rebase to branch '${TARGET_BRANCH}'. Please rebase your PR!"
 		exit 1
 	fi
 
 	proceed=0
 
-	readarray FILES_CHANGED < <(git diff --name-only origin/"${ghprbTargetBranch}")
+	readarray FILES_CHANGED < <(git diff --name-only origin/"${TARGET_BRANCH}")
 
 	for i in "${FILES_CHANGED[@]}"
 	do
@@ -75,7 +77,7 @@ make "rpms.${PLATFORM}" "vers=${VERSION}" "arch=${ARCH}" "refspec=${SAMBA_BRANCH
 make "test.rpms.${PLATFORM}" "vers=${VERSION}" "arch=${ARCH}" "refspec=${SAMBA_BRANCH}"
 
 # Don't upload the artifacts if running on a PR.
-if [ -n "${ghprbPullId}" ]
+if [ -n "${PULL_REQUEST_ID}" ]
 then
 	exit 0
 fi
