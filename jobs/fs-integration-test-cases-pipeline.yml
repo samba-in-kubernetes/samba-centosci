@@ -1,0 +1,21 @@
+- job:
+    name: samba_fs-integration-test-cases-pipeline
+    project-type: pipeline
+    description: Run FS integrations for clustered Samba (test-cases).
+    concurrent: true
+
+    properties:
+      - github:
+          url: https://github.com/samba-in-kubernetes/sit-test-cases
+      - build-discarder:
+          days-to-keep: 7
+          artifacts-days-to-keep: 7
+
+    pipeline-scm:
+      scm:
+        - git:
+            url: https://github.com/samba-in-kubernetes/samba-centosci.git
+            branches:
+              - '*/main'
+      script-path: jobs/pipelines/fs-integration-test-cases.Jenkinsfile
+      lightweight-checkout: true
