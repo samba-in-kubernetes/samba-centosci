@@ -1,6 +1,6 @@
 import groovy.json.JsonSlurper
 
-def K8S_VERSIONS = ['1.34', '1.35', 'latest']
+def K8S_VERSIONS = ['1.35', '1.36', 'latest']
 
 @NonCPS
 def matchCell(String eventType, String comment, String k8sVersion) {
@@ -197,7 +197,7 @@ properties([
         string(name: 'BUILD_GIT_BRANCH', defaultValue: 'master',
                description: 'Branch of samba-operator to build from (for manual triggers)'),
         string(name: 'K8S_VARIANT_FILTER', defaultValue: 'all',
-               description: 'Run a specific k8s version (e.g. latest, 1.33) or all'),
+               description: 'Run a specific k8s version (e.g. latest, 1.36) or all'),
     ]),
     pipelineTriggers([
         cron('H 2 * * *'),
