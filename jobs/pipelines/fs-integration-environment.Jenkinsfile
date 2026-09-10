@@ -169,7 +169,7 @@ def buildCell(String fileSystem) {
                         sh """
                             jobs/scripts/common/bootstrap.sh \
                                 \$WORKSPACE/jobs/scripts/fs-integration/fs-integration.sh \
-                                "BUILD_GIT_REPO=\${BUILD_GIT_REPO} PULL_REQUEST_ID=\${PULL_REQUEST_ID} TARGET_BRANCH=\${TARGET_BRANCH} CENTOS_VERSION=\${CENTOS_VERSION} FILE_SYSTEM=\${FILE_SYSTEM} GIT_REPO=\${GIT_REPO} S3_ACCESS_KEY=\${S3_ACCESS_KEY} S3_SECRET_KEY=\${S3_SECRET_KEY}"
+                                "BUILD_GIT_REPO=\${BUILD_GIT_REPO} BUILD_GIT_BRANCH=\${BUILD_GIT_BRANCH} PULL_REQUEST_ID=\${PULL_REQUEST_ID} TARGET_BRANCH=\${TARGET_BRANCH} CENTOS_VERSION=\${CENTOS_VERSION} FILE_SYSTEM=\${FILE_SYSTEM} GIT_REPO=\${GIT_REPO} S3_ACCESS_KEY=\${S3_ACCESS_KEY} S3_SECRET_KEY=\${S3_SECRET_KEY}"
                         """
                     }
 

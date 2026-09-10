@@ -8,8 +8,10 @@ PULL_REQUEST_ID="${PULL_REQUEST_ID:-${PULL_REQUEST_ID}}"
 TARGET_BRANCH="${TARGET_BRANCH:-${ghprbTargetBranch:-main}}"
 GIT_REPO_NAME="sit-environment"
 GIT_REPO_URL="https://github.com/samba-in-kubernetes/${GIT_REPO_NAME}.git"
+GIT_REPO_BRANCH="main"
 GIT_TARGET_REPO="${GIT_REPO}"
 GIT_TARGET_REPO_URL="${BUILD_GIT_REPO:-https://github.com/samba-in-kubernetes/${GIT_TARGET_REPO}.git}"
+GIT_TARGET_REPO_BRANCH="${BUILD_GIT_BRANCH:-main}"
 BACKEND="${FILE_SYSTEM:-glusterfs}"
 CENTOS_VERSION="${CENTOS_VERSION//[!0-9]}"
 TEST_EXTRA_VARS=""
@@ -28,16 +30,20 @@ dnf -y install git
 rm -rf tests
 mkdir tests
 cd tests
-git clone "${GIT_REPO_URL}"
+if [ "${GIT_TARGET_REPO}" = "sit-environment" ]; then
+	GIT_REPO_URL="${GIT_TARGET_REPO_URL}"
+	GIT_REPO_BRANCH="${GIT_TARGET_REPO_BRANCH}"
+fi
+git clone --branch="${GIT_REPO_BRANCH}" "${GIT_REPO_URL}"
 cd "${GIT_REPO_NAME}"
 
 TEST_EXTRA_VARS="backend=${BACKEND}"
 if [ "${GIT_TARGET_REPO}" = "sit-test-cases" ]; then
+	TEST_EXTRA_VARS="${TEST_EXTRA_VARS} \
+				test_repo=${GIT_TARGET_REPO_URL} \
+				test_repo_branch=${GIT_TARGET_REPO_BRANCH}"
 	if [ -n "${PULL_REQUEST_ID}" ]; then
-		# Just invoke "make test" with the corresponding parameters.
-		TEST_EXTRA_VARS="${TEST_EXTRA_VARS} \
-					test_repo=${GIT_TARGET_REPO_URL} \
-					test_repo_pr=${PULL_REQUEST_ID}"
+		TEST_EXTRA_VARS="${TEST_EXTRA_VARS} test_repo_pr=${PULL_REQUEST_ID}"
 	fi
 else
 	if [ -n "${PULL_REQUEST_ID}" ]; then

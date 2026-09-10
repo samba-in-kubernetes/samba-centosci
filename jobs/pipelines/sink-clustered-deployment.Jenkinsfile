@@ -158,7 +158,7 @@ def buildCell(String k8sVersion) {
                         sh """
                             jobs/scripts/common/bootstrap.sh \
                                 \$WORKSPACE/jobs/scripts/sink-clustered-deployment/sink-clustered-deployment.sh \
-                                "BUILD_GIT_REPO=\${BUILD_GIT_REPO} PULL_REQUEST_ID=\${PULL_REQUEST_ID} TARGET_BRANCH=\${TARGET_BRANCH} ACTUAL_COMMIT=\${COMMIT_SHA} CENTOS_VERSION=\${CENTOS_VERSION} IMG_REGISTRY_AUTH_USR=\${IMG_REGISTRY_AUTH_USR} IMG_REGISTRY_AUTH_PASSWD=\${IMG_REGISTRY_AUTH_PASSWD} KUBE_VERSION=\${KUBE_VERSION} ROOK_VERSION=\${ROOK_VERSION}"
+                                "BUILD_GIT_REPO=\${BUILD_GIT_REPO} BUILD_GIT_BRANCH=\${BUILD_GIT_BRANCH} PULL_REQUEST_ID=\${PULL_REQUEST_ID} TARGET_BRANCH=\${TARGET_BRANCH} ACTUAL_COMMIT=\${COMMIT_SHA} CENTOS_VERSION=\${CENTOS_VERSION} IMG_REGISTRY_AUTH_USR=\${IMG_REGISTRY_AUTH_USR} IMG_REGISTRY_AUTH_PASSWD=\${IMG_REGISTRY_AUTH_PASSWD} KUBE_VERSION=\${KUBE_VERSION} ROOK_VERSION=\${ROOK_VERSION}"
                         """
                     }
 
