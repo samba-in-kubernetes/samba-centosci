@@ -4,8 +4,7 @@
 # run the tests from https://github.com/samba-in-kubernetes/sit-test-cases.git
 # and run the tests.
 
-PULL_REQUEST_ID="${PULL_REQUEST_ID:-${PULL_REQUEST_ID}}"
-TARGET_BRANCH="${TARGET_BRANCH:-${ghprbTargetBranch:-main}}"
+TARGET_BRANCH="${TARGET_BRANCH:-main}"
 GIT_REPO_NAME="sit-environment"
 GIT_REPO_URL="https://github.com/samba-in-kubernetes/${GIT_REPO_NAME}.git"
 GIT_REPO_BRANCH="main"

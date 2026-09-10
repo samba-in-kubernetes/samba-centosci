@@ -2,8 +2,7 @@
 
 BUILD_GIT_REPO="${BUILD_GIT_REPO:-https://github.com/samba-in-kubernetes/samba-build}"
 BUILD_GIT_BRANCH="${BUILD_GIT_BRANCH:-main}"
-PULL_REQUEST_ID="${PULL_REQUEST_ID:-${ghprbPullId}}"
-TARGET_BRANCH="${TARGET_BRANCH:-${ghprbTargetBranch:-main}}"
+TARGET_BRANCH="${TARGET_BRANCH:-main}"
 SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
 SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
 PLATFORM="${OS_VERSION//[0-9]}"

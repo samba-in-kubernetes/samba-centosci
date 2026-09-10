@@ -1,8 +1,6 @@
 #!/bin/bash
 
-PULL_REQUEST_ID="${PULL_REQUEST_ID:-${PULL_REQUEST_ID}}"
-TARGET_BRANCH="${TARGET_BRANCH:-${ghprbTargetBranch:-master}}"
-ACTUAL_COMMIT="${ACTUAL_COMMIT:-${sha1}}"
+TARGET_BRANCH="${TARGET_BRANCH:-master}"
 SINK_OPERATOR_GIT_REPO="${BUILD_GIT_REPO:-https://github.com/samba-in-kubernetes/samba-operator}"
 SINK_OPERATOR_GIT_BRANCH="${BUILD_GIT_BRANCH:-master}"
 
@@ -76,10 +74,10 @@ if [ -n "${PULL_REQUEST_ID}" ]; then
 	fi
 
 	CI_IMG_TAG="ci-k8s-${KUBE_VERSION}-pr${PULL_REQUEST_ID}"
-	# if the sha1 hash is provided, we will try to append a short form of it to
+	# If the commit SHA is provided, append its short form to
 	# the tag to make the image unique to each "push" of the PR.
 	if [[ "$ACTUAL_COMMIT" =~ ^[abcdef0-9]{4}[abcdef0-9]*$ ]]; then
-		shortsha="${sha1:0:8}"
+		shortsha="${ACTUAL_COMMIT:0:8}"
 		CI_IMG_TAG="${CI_IMG_TAG}-${shortsha}"
 	fi
 fi
