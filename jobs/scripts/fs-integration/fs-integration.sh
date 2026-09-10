@@ -49,8 +49,7 @@ else
 		git fetch origin "pull/${PULL_REQUEST_ID}/head:pr_${PULL_REQUEST_ID}"
 		git checkout "pr_${PULL_REQUEST_ID}"
 
-		git rebase "origin/${TARGET_BRANCH}"
-		if [ $? -ne 0 ] ; then
+		if ! git rebase "origin/${TARGET_BRANCH}"; then
 			echo "Unable to automatically rebase to branch '${TARGET_BRANCH}'. Please rebase your PR!"
 			exit 1
 		fi
