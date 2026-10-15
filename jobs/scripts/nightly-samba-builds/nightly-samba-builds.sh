@@ -3,6 +3,7 @@
 BUILD_GIT_REPO="${BUILD_GIT_REPO:-https://github.com/samba-in-kubernetes/samba-build}"
 BUILD_GIT_BRANCH="${BUILD_GIT_BRANCH:-main}"
 TARGET_BRANCH="${TARGET_BRANCH:-main}"
+SAMBA_GIT_REPO="https://gitlab.com/samba-team/samba.git"
 SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
 SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
 PLATFORM="${OS_VERSION//[0-9]}"
@@ -71,7 +72,7 @@ then
 
 fi
 
-make "rpms.${PLATFORM}" "vers=${VERSION}" "arch=${ARCH}" "refspec=${SAMBA_BRANCH}"
+make "rpms.${PLATFORM}" "vers=${VERSION}" "arch=${ARCH}" "refspec=${SAMBA_BRANCH}" "git_repo_url=${SAMBA_GIT_REPO}"
 make "test.rpms.${PLATFORM}" "vers=${VERSION}" "arch=${ARCH}" "refspec=${SAMBA_BRANCH}"
 
 # Don't upload the artifacts if running on a PR.
