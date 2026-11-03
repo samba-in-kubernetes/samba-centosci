@@ -138,7 +138,7 @@ def buildCell(String k8sVersion) {
             "CENTOS_VERSION=9s",
             "OS_ARCH=x86_64",
             "DUFFY_POOL_TYPE=metal",
-            "ROOK_VERSION=1.17",
+            "ROOK_VERSION=1.20",
         ]) {
             withCredentials([
                 usernamePassword(credentialsId: 'samba-container-registry-auth',
