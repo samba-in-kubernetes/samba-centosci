@@ -224,7 +224,7 @@ properties([
 ])
 
 // Matrix definition
-def OS_VERSIONS = ['centos9', 'centos10', 'fedora44', 'fedora43']
+def OS_VERSIONS = ['centos9', 'centos10', 'fedora44', 'fedora45']
 def OS_ARCHS = ['x86_64', 'aarch64']
 def SAMBA_BRANCHES = ['master', 'v4-24-test', 'v4-25-test']
 
