@@ -123,7 +123,24 @@ def shouldRunCell(String osVersion, String osArch, String sambaBranch) {
     return matchCell(env.WEBHOOK_EVENT_TYPE, env.WEBHOOK_COMMENT_BODY ?: '', osVersion, osArch, sambaBranch)
 }
 
-def buildCell(String osVersion, String osArch, String sambaBranch) {
+def buildCell(String osVersion, String osArch, String sambaBranch, badge) {
+    // Clear the initial grey override so the plugin derives colors from the status.
+    badge.setColor(null)
+    badge.setStatus('running')
+    try {
+        runBuildCell(osVersion, osArch, sambaBranch)
+        badge.setStatus('passing')
+    } catch (org.jenkinsci.plugins.workflow.steps.FlowInterruptedException err) {
+        badge.setStatus('aborted')
+        badge.setColor('lightgrey')
+        throw err
+    } catch (err) {
+        badge.setStatus('failing')
+        throw err
+    }
+}
+
+def runBuildCell(String osVersion, String osArch, String sambaBranch) {
     def ctx = "centos-ci/build-rpms/${osVersion}/${sambaBranch}/${osArch}"
     def cellName = "samba_build-rpms-${osVersion}-${sambaBranch}-${osArch}"
 
@@ -242,8 +259,13 @@ for (def osVersion in OS_VERSIONS) {
             def ov = osVersion
             def oa = osArch
             def sb = sambaBranch
+            def cellId = "${ov}-${sb}-${oa}"
+            // Keep filtered-out variants visible as "not run".
+            def badge = addEmbeddableBadgeConfiguration(
+                id: cellId, subject: 'build', status: 'not run', color: 'lightgrey'
+            )
             if (shouldRunCell(ov, oa, sb)) {
-                cells["${ov}-${sb}-${oa}"] = { buildCell(ov, oa, sb) }
+                cells[cellId] = { buildCell(ov, oa, sb, badge) }
             }
         }
     }
